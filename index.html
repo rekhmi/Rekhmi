@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Assistant MVP</title>
+    <style>
+        /* كود الـ CSS الاحترافي الذي ناقشناه */
+        :root { --bg: #0b0e11; --card: #15191c; --primary: #1d9bf0; --text: #fff; --border: #2f3336; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border-radius: 25px; border: none; background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; }
+        .results { display:none; border-top: 2px solid var(--primary); padding-top: 20px; }
+        .note { font-size: 12px; color: #71767b; margin-top: 20px; line-height: 1.6; }
+        /* أيقونة الشات بوت */
+        .chat-icon { position: fixed; bottom: 20px; right: 20px; background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center; color:var(--primary)">Lab Assistant</h2>
+    
+    <div id="step1" class="card">
+        <h3>إعدادات التخفيف</h3>
+        <input type="number" id="sample_vol" placeholder="حجم العينة (µl)">
+        <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
+        <button onclick="initCalc()">ابدأ العد</button>
+    </div>
+
+    <div id="step2" class="card" style="display:none;">
+        <h3 id="square_title">المربع 1 / 32</h3>
+        <input type="number" id="current_total" placeholder="إجمالي العدد في المربع">
+        <div id="morph_section">
+            <input type="number" id="abn_total" placeholder="إجمالي الخلايا المشوهة">
+            <input type="number" id="h_def" placeholder="تشوهات الرأس">
+            <input type="number" id="n_def" placeholder="تشوهات الرقبة">
+            <input type="number" id="t_def" placeholder="تشوهات الذيل">
+        </div>
+        <button onclick="processSquare()">المربع التالي</button>
+    </div>
+
+    <div id="results" class="card results">
+        <h3>النتائج النهائية</h3>
+        <p id="res_conc"></p>
+        <p id="res_morph"></p>
+        <div class="note">
+            <strong>ملحوظة هامة:</strong> مجموع نسب التشوهات قد يتجاوز 100% لأن الحيوان الواحد قد يحمل أكثر من عيب (المعايير الدولية).
+        </div>
+    </div>
+</div>
+
+<div class="chat-icon" onclick="alert('الشات بوت قيد التطوير وسيتم ربطه بـ AI قريباً!')">💬</div>
+
+<script>
+    // هنا نضع منطق الـ JavaScript الذي يحاكي كود البايثون الخاص بك بالملي
+    let state = {
+        current: 1, sampleV: 0, diluentV: 0, 
+        totalCounts: [], abnTotals: [], heads: [], necks: [], tails: [],
+        morphDone: false
+    };
+
+    function initCalc() {
+        state.sampleV = parseFloat(document.getElementById('sample_vol').value);
+        state.diluentV = parseFloat(document.getElementById('diluent_vol').value);
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+    }
+
+    function processSquare() {
+        let t = parseInt(document.getElementById('current_total').value);
+        state.totalCounts.push(t);
+        
+        if(!state.morphDone) {
+            state.abnTotals.push(parseInt(document.getElementById('abn_total').value) || 0);
+            state.heads.push(parseInt(document.getElementById('h_def').value) || 0);
+            state.necks.push(parseInt(document.getElementById('n_def').value) || 0);
+            state.tails.push(parseInt(document.getElementById('t_def').value) || 0);
+            
+            let sumT = state.totalCounts.reduce((a,b)=>a+b, 0);
+            if(sumT >= 100) {
+                if(confirm("وصلت لـ 100 حيوان، هل تكتفي بهذا للمورفولوجي؟")) {
+                    state.morphDone = true;
+                    document.getElementById('morph_section').style.display = 'none';
+                }
+            }
+        }
+
+        if(state.current < 32) {
+            state.current++;
+            document.getElementById('square_title').innerText = `المربع ${state.current} / 32`;
+            document.getElementById('current_total').value = "";
+        } else {
+            showFinal();
+        }
+    }
+
+    function showFinal() {
+        let df = (state.sampleV + state.diluentV) / state.sampleV;
+        let conc = state.totalCounts.reduce((a,b)=>a+b, 0) * (df * 5000);
+        let div = state.morphDone ? state.totalCounts.slice(0, state.abnTotals.length).reduce((a,b)=>a+b,0) : state.totalCounts.reduce((a,b)=>a+b,0);
+        let morph = ((div - state.abnTotals.reduce((a,b)=>a+b,0)) / div) * 100;
+
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('res_conc').innerText = `التركيز: ${conc.toLocaleString()} / مل`;
+        document.getElementById('res_morph').innerText = `المورفولوجي الطبيعي: ${morph.toFixed(2)}%`;
+    }
+</script>
+</body>
+</html>
