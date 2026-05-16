@@ -25,8 +25,25 @@
         
         /* الأيقونات السفلية */
         .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
-        .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; }
+        .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
         .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
+
+        /* تنسيق أيقونة الشات بوت الجديدة بالشعار */
+        .bot-logo-btn {
+            background: #ffffff !important;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            padding: 0;
+        }
+        .bot-logo-btn img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            transform: translateY(2px);
+        }
+        .tool-btn:active {
+            transform: scale(0.95);
+        }
 
         /* واجهة الشات */
         #chat-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: none; flex-direction: column; }
@@ -101,7 +118,9 @@
 
 <div class="bottom-tools">
     <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المععده بالذكاء الاصطناعي ✨')">📄🔍</div>
-    <div class="tool-btn" onclick="toggleChat()">👨‍🔬💬</div>
+    <div class="tool-btn bot-logo-btn" onclick="toggleChat()">
+        <img src="shaelook.png" alt="ShareLook AI">
+    </div>
 </div>
 
 <div id="chat-window">
@@ -178,13 +197,11 @@
         const squaresCounted = state.history.length;
         const totalInSquares = state.history.reduce((s, i) => s + i.t, 0);
         
-        // المعادلة المرنة: ضرب الإجمالي في (32 / عدد المربعات المنجزة)
         const factor = 32 / squaresCounted;
         const df = (state.sampleV + state.diluentV) / state.sampleV;
         const conc = (totalInSquares * factor) * (df * 5000);
         const totalSpermCount = conc * state.totalSemenV;
 
-        // Morphology
         const abnSum = state.history.reduce((s, i) => s + i.abn, 0);
         const normalPct = totalInSquares > 0 ? ((totalInSquares - abnSum) / totalInSquares) * 100 : 0;
         const abnPct = 100 - normalPct;
@@ -207,7 +224,6 @@
         win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // الدالة المعدلة والمؤمنة بالكامل لعرض كامل النص والأسطر الجديدة بأمان
     async function sendMessage() {
         const input = document.getElementById('chat-input');
         if (!input.value.trim()) return;
@@ -218,7 +234,6 @@
         const msgs = document.getElementById('chat-msgs');
         msgs.innerHTML += `<div class="msg user">${question}</div>`;
         
-        // إنشاء عنصر جديد ومستقل للـ Bot لكل استجابة لمنع تدمير البنية البرمجية للصفحة
         const botMessageElement = document.createElement('div');
         botMessageElement.className = 'msg bot';
         botMessageElement.innerText = '⏳ جاري كتابة الرد...';
@@ -234,8 +249,6 @@
             });
             
             const data = await response.json();
-            
-            // حقن النص كاملاً مع تحويل الأسطر الجديدة (\n) إلى سطور مرئية (<br>) في صفحة الشات
             botMessageElement.innerHTML = data.answer.replace(/\n/g, '<br>');
             
         } catch (e) {
