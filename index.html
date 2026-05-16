@@ -28,7 +28,7 @@
         .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
         .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
 
-        /* الحل البرمجي لضبط أبعاد الصورة وعمل زووم على الكيميائي */
+        /* الحل البرمجة لضبط أبعاد الصورة وعمل زووم على الكيميائي */
         .bot-logo-btn {
             background: #ffffff !important;
             overflow: hidden; /* لإخفاء كلمة sharelook والمساحات الزائدة */
@@ -57,6 +57,25 @@
         .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
         .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
         
+        /* تأثير الدائرة الدوارة الـ Spinner */
+        .loading-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* تنسيق الـ PDF */
         #pdf-report { padding: 40px; color: #000; background: #fff; font-family: 'Arial', sans-serif; display: none; }
         .pdf-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
@@ -77,7 +96,7 @@
 
     <div id="step2" class="card" style="display:none;">
         <h3 id="square_title">المربع 1 / 32</h3>
-        <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف؟</div>
+        <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف？</div>
         
         <label>إجمالي الحيوانات المنوية:</label>
         <input type="number" id="current_total">
@@ -132,7 +151,7 @@
         <button onclick="toggleChat()" style="background:none; color:#fff; font-size:24px;">✕</button>
     </div>
     <div class="chat-messages" id="chat-msgs">
-        <div class="msg bot">أهلاً بك يا دكتور، أنا مساعدك الذكي. حالياً أنا في مرحلة التطوير، وقريباً سأكون قادراً على الرد على كافة استفساراتك العلمية.</div>
+        <div class="msg bot">أهلاً يا دكتور، أقدر أساعدك إزاي؟! ✨</div>
     </div>
     <div class="chat-input-area">
         <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا...">
@@ -237,12 +256,32 @@
         const msgs = document.getElementById('chat-msgs');
         msgs.innerHTML += `<div class="msg user">${question}</div>`;
         
+        // إنشاء حاوية التحميل بداخلها الـ Spinner وأول خطوة تفكير
         const botMessageElement = document.createElement('div');
-        botMessageElement.className = 'msg bot';
-        botMessageElement.innerText = '⏳ جاري كتابة الرد...';
-        msgs.appendChild(botMessageElement);
+        botMessageElement.className = 'msg bot loading-container';
         
+        const thinkingSteps = [
+            "🔍 جاري مراجعة وتحليل الفحص الطبي...",
+            "🧬 فحص تأثير التحليل والبروتوكول المخبري...",
+            "📝 جاري صياغة التوصية الطبية والرد النهائي..."
+        ];
+        let stepIndex = 0;
+
+        botMessageElement.innerHTML = `
+            <div class="loading-spinner"></div>
+            <span id="thinking-text">${thinkingSteps[0]}</span>
+        `;
+        msgs.appendChild(botMessageElement);
         msgs.scrollTop = msgs.scrollHeight;
+
+        // عداد لتبديل خطوات التفكير تلقائياً كل ثانيتين لإعطاء عمق ذكي للواجهة
+        const thinkingInterval = setInterval(() => {
+            stepIndex++;
+            const textElement = document.getElementById("thinking-text");
+            if (textElement && stepIndex < thinkingSteps.length) {
+                textElement.innerText = thinkingSteps[stepIndex];
+            }
+        }, 2000);
 
         try {
             const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
@@ -252,9 +291,15 @@
             });
             
             const data = await response.json();
+            
+            // إيقاف العداد، وإزالة كلاس الـ loading، وإفراغ الـ Spinner لوضع النص النهائي المنسق
+            clearInterval(thinkingInterval);
+            botMessageElement.classList.remove('loading-container');
             botMessageElement.innerHTML = data.answer.replace(/\n/g, '<br>');
             
         } catch (e) {
+            clearInterval(thinkingInterval);
+            botMessageElement.classList.remove('loading-container');
             botMessageElement.innerText = '❌ حدث خطأ في الاتصال';
         }
         msgs.scrollTop = msgs.scrollHeight;
