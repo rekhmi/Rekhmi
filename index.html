@@ -28,18 +28,21 @@
         .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
         .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
 
-        /* تنسيق أيقونة الشات بوت الجديدة بالشعار */
+        /* الحل البرمجي لضبط أبعاد الصورة وعمل زووم على الكيميائي */
         .bot-logo-btn {
             background: #ffffff !important;
-            overflow: hidden;
+            overflow: hidden; /* لإخفاء كلمة sharelook والمساحات الزائدة */
             border: 2px solid var(--primary);
             padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .bot-logo-btn img {
-            width: 85%;
-            height: 85%;
+            width: 140%; /* تكبير الصورة لتملأ الدائرة وتختفي الهوامش البيضاء */
+            height: 140%;
             object-fit: contain;
-            transform: translateY(2px);
+            transform: translateY(12px); /* تحريك الصورة لأسفل قليلاً لتركيز الدائرة على وجه وجسد الكيميائي */
         }
         .tool-btn:active {
             transform: scale(0.95);
