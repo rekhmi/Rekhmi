@@ -7,15 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { 
-            --bg: #0b0e11; 
-            --card: #15191c; 
-            --primary: #1d9bf0; 
-            --text: #fff; 
-            --border: #2f3336; 
-            --error: #f4212e; 
-            --success: #4BB543; 
-        }
+        :root { --bg: #0b0e11; --card: #15191c; --primary: #1d9bf0; --text: #fff; --border: #2f3336; --error: #f4212e; --success: #4BB543; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 500px; padding-bottom: 80px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; }
@@ -47,13 +39,11 @@
             align-items: center;
             justify-content: center;
         }
-        /* إضافة منع استقبال الإشارات هنا لمنع تعطيل الـ Click Event */
         .bot-logo-btn img {
             width: 140%; 
             height: 140%;
             object-fit: contain;
             transform: translateY(12px); 
-            pointer-events: none; 
         }
         .tool-btn:active {
             transform: scale(0.95);
@@ -62,11 +52,6 @@
         /* واجهة الشات */
         #chat-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: none; flex-direction: column; }
         .chat-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        
-        /* ضبط السطوع للأسماء لمنح المستخدم إحساس الفخامة والأهمية المطلوبة */
-        .header-app-name { font-weight: bold; color: rgba(255, 255, 255, 0.6); font-size: 14px; }
-        .header-user-title { color: #ffffff; font-size: 18px; font-weight: bold; }
-
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         
         /* تأثير الإبهار والظهور الانسيابي للفقاعات (Gemini & Grok Style) */
@@ -95,7 +80,7 @@
         .msg ul, .msg ol { margin: 5px 0; padding-right: 20px; }
         .msg strong, .msg b { color: #fff; font-weight: bold; }
 
-        .msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
         .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
         
@@ -181,7 +166,7 @@
 </div>
 
 <div class="bottom-tools">
-    <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المعقده بالذكاء الاصطناعي ✨')">📄🔍</div>
+    <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المععده بالذكاء الاصطناعي ✨')">📄🔍</div>
     <div class="tool-btn bot-logo-btn" onclick="toggleChat()">
         <img src="shaelook.png" alt="ShareLook AI">
     </div>
@@ -189,11 +174,8 @@
 
 <div id="chat-window">
     <div class="chat-header">
-        <div>
-            <span class="header-app-name">ShareLook AI</span><br>
-            <span class="header-user-title">يا دكتور</span>
-        </div>
-        <button onclick="toggleChat()" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">✕</button>
+        <span>ShareLook AI Assistant</span>
+        <button onclick="toggleChat()" style="background:none; color:#fff; font-size:24px;">✕</button>
     </div>
     <div class="chat-messages" id="chat-msgs">
         <div class="msg bot">أهلاً يا دكتور، أقدر أساعدك إزاي?! ✨</div>
@@ -229,7 +211,7 @@
         if (!state.morphDone && data.abn > data.t) return alert(خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t}));
         
         if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
-            if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف？")) return location.reload();
+            if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return location.reload();
             state.overloadIgnored = true;
         }
 
@@ -340,7 +322,7 @@
             const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                // إرسال مصفوفة التاريخ الكاملة التي تحمل نسيج المحادثة بالكامل بدلاً من سؤال منفرد
+                // إرسال المصفوفة الكاملة التي تحمل نسيج المحادثة بالكامل بدلاً من سؤال منفرد
                 body: JSON.stringify({ history: chatContext })
             });
             
@@ -377,78 +359,3 @@
 </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareLook AI</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        :root { 
-            /* تم تعديل الخلفية إلى درجة الرمادي الفحمي Material Dark */
-            --bg: #111111; 
-            /* تم تعديل الكروت إلى درجة رمادي افتح قليلاً لزيادة العمق */
-            --card: #1e1e1e; 
-            
-            /* تم تعديل درجة الأزرق لتكون أكثر سطوعاً (Google Blue) لتناسب الخلفية الجديدة */
-            --primary: #8ab4f8; 
-            /* أزرق أغمق لزر الإرسال وحسابات التدرج */
-            --primary-dark: #1a73e8; 
-            
-            --text: #e8eaed; /* أبيض مكسور مريح للعين */
-            --border: #2f3336; 
-            --error: #f4212e; 
-            --success: #81c995; /* أخضر مريح للعين */
-            --muted: #9aa0a6; /* رمادي مكتوم */
-            --user-bubble: #303134; /* لون فقاعة المستخدم الرمادي الغامق */
-        }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* الهيدر العلوي والقائمة */
-        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 10; height: 56px; }
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .menu-btn { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
-        .menu-btn span { width: 25px; height: 2px; background: var(--text); display: block; transition: 0.3s; }
-        .app-title { font-size: 18px; font-weight: bold; color: var(--primary); }
-        
-        /* زرار شات جديد الفوقاني */
-        .new-chat-btn { background: none; border: none; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: background 0.2s; }
-        .new-chat-btn:hover { background: rgba(255,255,255,0.05); }
-        .new-chat-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* القائمة الجانبية المنسدلة */
-        .sidebar-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: 0.3s ease; padding: 20px; display: flex; flex-direction: column; }
-        .sidebar-menu.open { right: 0; }
-        .sidebar-header { display: flex; justify-content: flex-end; margin-bottom: 30px; }
-        .close-menu { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
-        .menu-items { display: flex; flex-direction: column; gap: 15px; }
-        .menu-item { padding: 12px 15px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .menu-item.active { background: #303134; color: var(--primary); }
-        .menu-item:hover:not(.active) { background: rgba(255,255,255,0.05); }
-
-        /* حاوية الشاشات الرئيسية */
-        .screen { flex: 1; display: none; overflow-y: auto; padding: 20px; }
-        .screen.active { display: flex; flex-direction: column; }
-
-        /* واجهة الشات الرئيسية */
-        #chat-screen { justify-content: space-between; padding: 0; height: calc(100vh - 56px); }
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; position: relative; }
-        
-        /* رسالة الترحيب */
-        .welcome-msg { text-align: center; margin: auto; padding: 20px; max-width: 400px; }
-        .welcome-msg h1 { font-size: 32px; font-weight: bold; margin-bottom: 10px; background: linear-gradient(45deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .welcome-msg p { color: var(--muted); font-size: 16px; margin: 0; }
-        
-        /* ضبط الرسائل والفقاعات */
-        .chat-messages-wrapper { display: flex; flex-direction: column; gap: 20px; padding-bottom: 10px; }
-        .msg { width: 100%; line-height: 1.7; word-wrap: break-word; font-size: 16px; }
-        .msg p { margin: 0 0 10px 0; }
-        .msg p:last-child { margin-bottom: 0; }
-        .msg ul, .msg ol { padding-right: 20px; margin: 10px 0; }
-        .msg strong, .msg b { color: var(--primary); font-weight: bold; }
-        
-        /* فقاعة المستخدم المحدثة */
-        .msg.user { color: #fff; background: var(--user-bubble); padding: 12px 16px; border-radius: 18px 18px 0 18px; align-self: flex-start; max-width: 85%; bor
