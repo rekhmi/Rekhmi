@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -8,132 +9,370 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root { 
-            --bg: #111111; --card: #1e1e1e; --primary: #8ab4f8; --primary-dark: #1a73e8; 
-            --text: #e8eaed; --border: #2f3336; --error: #f4212e; --success: #81c995; 
-            --muted: #9aa0a6; --user-bubble: #303134; 
+            --bg: #0b0e11; 
+            --card: #15191c; 
+            --primary: #1d9bf0; 
+            --text: #fff; 
+            --border: #2f3336; 
+            --error: #f4212e; 
+            --success: #4BB543; 
         }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; padding-bottom: 80px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; }
+        h2, h3 { color: var(--primary); text-align: center; margin-top: 0; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; box-sizing: border-box; font-size: 16px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .row-btns { display: flex; gap: 10px; }
+        button { flex: 1; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-secondary { background: #333; color: #eee; }
+        .btn-success { background: var(--success); color: #fff; }
+        .warning { color: var(--error); background: rgba(244, 33, 46, 0.1); padding: 10px; border-radius: 8px; font-size: 14px; margin: 10px 0; display: none; }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .res-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .note { font-size: 12px; color: #71767b; margin-top: 20px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
         
-        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--border); height: 56px; }
-        .app-title { font-size: 18px; font-weight: bold; color: var(--primary); }
-        .sidebar-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); z-index: 100; transition: 0.3s; padding: 20px; }
-        .sidebar-menu.open { right: 0; }
-        .screen { flex: 1; display: none; overflow-y: auto; padding: 20px; }
-        .screen.active { display: flex; flex-direction: column; }
-        
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; }
-        .welcome-msg { text-align: center; margin: auto; }
-        .welcome-msg h1 { font-size: 32px; background: linear-gradient(45deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .msg { width: 100%; padding: 10px; margin: 10px 0; }
-        .msg.user { background: var(--user-bubble); padding: 12px 16px; border-radius: 18px 18px 0 18px; align-self: flex-start; max-width: 85%; }
-        
-        .main-input-area { padding: 15px; border-top: 1px solid var(--border); }
-        .input-wrapper { display: flex; background: #202124; border-radius: 25px; padding: 10px; align-items: center; max-width: 800px; margin: 0 auto; }
-        textarea { flex: 1; background: transparent; border: none; color: #fff; outline: none; resize: none; height: 26px; }
-        .send-btn { background: var(--primary-dark); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; }
+        /* الأيقونات السفلية */
+        .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
+        .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
 
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; max-width: 500px; margin: 0 auto; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; }
-        button { padding: 12px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-primary { background: var(--primary-dark); color: white; width: 100%; }
-        .btn-success { background: var(--success); color: black; }
+        /* الحل البرمجي لضبط أبعاد الصورة وعمل زووم على الكيميائي */
+        .bot-logo-btn {
+            background: #ffffff !important;
+            overflow: hidden; 
+            border: 2px solid var(--primary);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bot-logo-btn img {
+            width: 140%; 
+            height: 140%;
+            object-fit: contain;
+            transform: translateY(12px); 
+        }
+        .tool-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* واجهة الشات */
+        #chat-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: none; flex-direction: column; }
+        .chat-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* ضبط السطوع للأسماء لمنح المستخدم إحساس الفخامة والأهمية المطلوبة */
+        .header-app-name { font-weight: bold; color: rgba(255, 255, 255, 0.6); font-size: 14px; }
+        .header-user-title { color: #ffffff; font-size: 18px; font-weight: bold; }
+
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        /* تأثير الإبهار والظهور الانسيابي للفقاعات (Gemini & Grok Style) */
+        .msg { 
+            max-width: 80%; 
+            padding: 12px 16px; 
+            border-radius: 18px; 
+            line-height: 1.6; 
+            word-wrap: break-word;
+            opacity: 0;
+            transform: translateY(15px) scale(0.98);
+            animation: premiumShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes premiumShow {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* ضبط هوامش النصوص المترجمة من المارك داون داخل الفقاعات */
+        .msg p { margin: 0 0 8px 0; }
+        .msg p:last-child { margin-bottom: 0; }
+        .msg ul, .msg ol { margin: 5px 0; padding-right: 20px; }
+        .msg strong, .msg b { color: #fff; font-weight: bold; }
+
+        .msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        
+        /* تأثير الدائرة الدوارة الـ Spinner */
+        .loading-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* تنسيق الـ PDF */
+        #pdf-report { padding: 40px; color: #000; background: #fff; font-family: 'Arial', sans-serif; display: none; }
+        .pdf-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="app-header">
-        <button onclick="toggleMenu()">☰</button>
-        <div class="app-title">ShareLook AI</div>
-        <button onclick="createNewChat()">+</button>
+<div class="container">
+    <h2>ShareLook AI</h2>
+    
+    <div id="step1" class="card">
+        <h3>إعدادات العينة</h3>
+        <input type="number" id="sample_vol" placeholder="حجم عينة التخفيف (µl)">
+        <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
+        <input type="number" id="total_semen_vol" placeholder="الحجم الكلي للعينة (ml)">
+        <button class="btn-primary" onclick="initCalc()">ابدأ العد</button>
     </div>
 
-    <div class="sidebar-menu" id="sidebar">
-        <button onclick="toggleMenu()">✕</button>
-        <div onclick="navigateTo('chat')">Assistant</div>
-        <div onclick="navigateTo('calc')">Semen Calculator</div>
-    </div>
-
-    <div id="chat-screen" class="screen active">
-        <div class="chat-container" id="chat-list">
-            <div class="welcome-msg" id="welcome"><h1>أهلاً يا دكتور</h1></div>
-            <div id="messages"></div>
+    <div id="step2" class="card" style="display:none;">
+        <h3 id="square_title">المربع 1 / 32</h3>
+        <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف؟</div>
+        
+        <label>إجمالي الحيوانات المنوية:</label>
+        <input type="number" id="current_total">
+        
+        <div id="morph_section">
+            <h4 style="margin: 10px 0 5px 0;">Morphology:</h4>
+            <input type="number" id="abn_total" placeholder="إجمالي المشوهين">
+            <input type="number" id="h_def" placeholder="عيوب الرأس">
+            <input type="number" id="n_def" placeholder="عيوب الرقبة">
+            <input type="number" id="t_def" placeholder="عيوب الذيل">
         </div>
-        <div class="main-input-area">
-            <div class="input-wrapper">
-                <textarea id="chat-input" placeholder="اسأل عن أي شيء..."></textarea>
-                <button class="send-btn" onclick="sendMessage()">➤</button>
+
+        <div class="btn-group">
+            <div class="row-btns">
+                <button id="back_btn" class="btn-secondary" onclick="prevSquare()">العودة</button>
+                <button class="btn-primary" onclick="processSquare()">التالي</button>
             </div>
+            <button class="btn-success" onclick="showFinal()">اعرض النتيجة الآن</button>
         </div>
     </div>
 
-    <div id="calc-screen" class="screen">
-        <div id="step1" class="card">
-            <h3>إعدادات العينة</h3>
-            <input type="number" id="sample_vol" placeholder="حجم العينة (µl)">
-            <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
-            <input type="number" id="total_semen_vol" placeholder="الحجم الكلي (ml)">
-            <button class="btn-primary" onclick="initCalc()">ابدأ</button>
+    <div id="results" class="card" style="display:none;">
+        <div id="printable-area">
+            <h3>النتائج التحليلية النهائيـة</h3>
+            <div id="res_conc" style="font-size: 1.1em; font-weight: bold; margin-bottom: 5px;"></div>
+            <div id="res_total_count" style="font-size: 1.1em; color: var(--primary); margin-bottom: 15px;"></div>
+            
+            <div class="results-grid">
+                <div class="res-item">الطبيعي: <span id="res_morph" style="color: var(--success);"></span></div>
+                <div class="res-item">التشوهات: <span id="res_abn_pct" style="color: var(--error);"></span></div>
+                <div class="res-item">عيوب رأس: <span id="res_h"></span></div>
+                <div class="res-item">عيوب رقبة: <span id="res_n"></span></div>
+                <div class="res-item">عيوب ذيل: <span id="res_t"></span></div>
+            </div>
+            <div class="note">بناءً على عد <span id="res_sq_count"></span> مربعاً</div>
         </div>
-        <div id="step2" class="card" style="display:none;">
-            <h3 id="sq_title">المربع 1</h3>
-            <input type="number" id="current_total" placeholder="العدد">
-            <input type="number" id="abn_total" placeholder="المشوهين">
-            <button class="btn-primary" onclick="processSquare()">التالي</button>
-            <button class="btn-success" onclick="showFinal()">النتيجة</button>
-        </div>
-        <div id="results" class="card" style="display:none;">
-            <h3>النتيجة النهائية</h3>
-            <div id="res_text"></div>
-            <button onclick="location.reload()">تحليل جديد</button>
-        </div>
+        <button class="btn-primary" style="margin-top:15px" onclick="downloadPDF()">تحميل النتيجة PDF</button>
+        <button class="btn-secondary" style="margin-top:10px" onclick="location.reload()">تحليل جديد</button>
     </div>
+</div>
+
+<div class="bottom-tools">
+    <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المعقده بالذكاء الاصطناعي ✨')">📄🔍</div>
+    <div class="tool-btn bot-logo-btn" onclick="toggleChat()">
+        <img src="shaelook.png" alt="ShareLook AI">
+    </div>
+</div>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <div>
+            <span class="header-app-name">ShareLook AI</span><br>
+            <span class="header-user-title">يا دكتور</span>
+        </div>
+        <button onclick="toggleChat()" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-msgs">
+        <div class="msg bot">أهلاً يا دكتور، أقدر أساعدك إزاي?! ✨</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا...">
+        <button class="btn-primary" style="width:70px;" onclick="sendMessage()">إرسال</button>
+    </div>
+</div>
 
 <script>
-    let state = { current: 1, history: [] };
-    
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-    function navigateTo(t) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(t + '-screen').classList.add('active');
-        toggleMenu();
-    }
-    
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        if(!input.value) return;
-        document.getElementById('welcome').style.display = 'none';
-        document.getElementById('messages').innerHTML += `<div class="msg user">${input.value}</div>`;
-        
-        const res = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
-            method: "POST",
-            body: JSON.stringify({ history: [{role: "user", parts: [{text: input.value}]}] })
-        });
-        const data = await res.json();
-        document.getElementById('messages').innerHTML += `<div class="msg bot">${marked.parse(data.answer)}</div>`;
-        input.value = "";
-    }
+    let state = {
+        current: 1, sampleV: 0, diluentV: 0, totalSemenV: 0,
+        history: [], morphDone: false, overloadIgnored: false
+    };
+
+    // مصفوفة عالمية للاحتفاظ بسياق المحادثة الممتد لنموذج جيرمني
+    let chatContext = [];
 
     function initCalc() {
+        state.sampleV = parseFloat(document.getElementById('sample_vol').value) || 0;
+        state.diluentV = parseFloat(document.getElementById('diluent_vol').value) || 0;
+        state.totalSemenV = parseFloat(document.getElementById('total_semen_vol').value) || 0;
+        if(state.sampleV <= 0 || state.totalSemenV <= 0) return alert("برجاء إدخال حجم العينة والحجم الكلي");
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
+        updateUI();
     }
 
     function processSquare() {
-        state.history.push({t: document.getElementById('current_total').value, abn: document.getElementById('abn_total').value});
-        state.current++;
-        document.getElementById('sq_title').innerText = "المربع " + state.current;
-        if(state.current > 32) showFinal();
+        saveCurrentState();
+        const data = state.history[state.current - 1];
+        if (!state.morphDone && data.abn > data.t) return alert(خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t}));
+        
+        if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
+            if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف？")) return location.reload();
+            state.overloadIgnored = true;
+        }
+
+        if (state.current < 32) { state.current++; updateUI(); } 
+        else { showFinal(); }
+    }
+
+    function saveCurrentState() {
+        state.history[state.current - 1] = {
+            t: parseInt(document.getElementById('current_total').value) || 0,
+            abn: parseInt(document.getElementById('abn_total').value) || 0,
+            h: parseInt(document.getElementById('h_def').value) || 0,
+            n: parseInt(document.getElementById('n_def').value) || 0,
+            t_def: parseInt(document.getElementById('t_def').value) || 0
+        };
+    }
+
+    function prevSquare() {
+        if (state.current > 1) { state.current--; updateUI(); }
+    }
+
+    function updateUI() {
+        document.getElementById('square_title').innerText = المربع ${state.current} / 32;
+        const val = state.history[state.current - 1] || {t:"", abn:"", h:"", n:"", t_def:""};
+        document.getElementById('current_total').value = val.t;
+        document.getElementById('abn_total').value = val.abn;
+        document.getElementById('h_def').value = val.h;
+        document.getElementById('n_def').value = val.n;
+        document.getElementById('t_def').value = val.t_def;
+        document.getElementById('back_btn').style.visibility = state.current === 1 ? 'hidden' : 'visible';
     }
 
     function showFinal() {
+        saveCurrentState();
+        const squaresCounted = state.history.length;
+        const totalInSquares = state.history.reduce((s, i) => s + i.t, 0);
+        
+        const factor = 32 / squaresCounted;
+        const df = (state.sampleV + state.diluentV) / state.sampleV;
+        const conc = (totalInSquares * factor) * (df * 5000);
+        const totalSpermCount = conc * state.totalSemenV;
+
+        const abnSum = state.history.reduce((s, i) => s + i.abn, 0);
+        const normalPct = totalInSquares > 0 ? ((totalInSquares - abnSum) / totalInSquares) * 100 : 0;
+        const abnPct = 100 - normalPct;
+
         document.getElementById('step2').style.display = 'none';
         document.getElementById('results').style.display = 'block';
-        document.getElementById('res_text').innerText = "تمت الحسابات بنجاح!";
+        
+        document.getElementById('res_conc').innerText = Concentration: ${conc.toLocaleString()} /ml;
+        document.getElementById('res_total_count').innerText = Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate;
+        document.getElementById('res_morph').innerText = normalPct.toFixed(1) + "%";
+        document.getElementById('res_abn_pct').innerText = abnPct.toFixed(1) + "%";
+        document.getElementById('res_h').innerText = ((state.history.reduce((s,i)=>s+i.h,0)/totalInSquares)*100).toFixed(1) + "%";
+        document.getElementById('res_n').innerText = ((state.history.reduce((s,i)=>s+i.n,0)/totalInSquares)*100).toFixed(1) + "%";
+        document.getElementById('res_t').innerText = ((state.history.reduce((s,i)=>s+i.t_def,0)/totalInSquares)*100).toFixed(1) + "%";
+        document.getElementById('res_sq_count').innerText = squaresCounted;
     }
 
-    function createNewChat() { location.reload(); }
+    function toggleChat() {
+        const win = document.getElementById('chat-window');
+        win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        if (!input.value.trim()) return;
+        
+        const question = input.value;
+        input.value = "";
+        
+        const msgs = document.getElementById('chat-msgs');
+        msgs.innerHTML += <div class="msg user">${question}</div>;
+        
+        const botMessageElement = document.createElement('div');
+        botMessageElement.className = 'msg bot loading-container';
+        
+        const thinkingSteps = [
+            "🔍 جاري مراجعة وتحليل الفحص الطبي...",
+            "🧬 فحص تأثير التحليل والبروتوكول المخبري...",
+            "📝 جاري صياغة التوصية الطبية والرد النهائي..."
+        ];
+        let stepIndex = 0;
+
+        botMessageElement.innerHTML = `
+            <div class="loading-spinner"></div>
+            <span id="thinking-text">${thinkingSteps[0]}</span>
+        `;
+        msgs.appendChild(botMessageElement);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        const thinkingInterval = setInterval(() => {
+            stepIndex++;
+            const textElement = document.getElementById("thinking-text");
+            if (textElement && stepIndex < thinkingSteps.length) {
+                textElement.style.opacity = 0;
+                setTimeout(() => {
+                    textElement.innerText = thinkingSteps[stepIndex];
+                    textElement.style.opacity = 1;
+                }, 200);
+            }
+        }, 2000);
+
+        // دفع السؤال الجديد إلى مصفوفة السياق بالهيكل القياسي
+        chatContext.push({ role: "user", parts: [{ text: question }] });
+
+        try {
+            const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                // إرسال مصفوفة التاريخ الكاملة التي تحمل نسيج المحادثة بالكامل بدلاً من سؤال منفرد
+                body: JSON.stringify({ history: chatContext })
+            });
+            
+            const data = await response.json();
+            
+            clearInterval(thinkingInterval);
+            
+            // تخزين إجابة النموذج الراجعة في المصفوفة للحفاظ على تتابع الحوار مستقبلاً
+            chatContext.push({ role: "model", parts: [{ text: data.answer }] });
+            
+            botMessageElement.style.opacity = 0;
+            setTimeout(() => {
+                botMessageElement.classList.remove('loading-container');
+                botMessageElement.innerHTML = marked.parse(data.answer);
+                botMessageElement.style.opacity = 1;
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 150);
+            
+        } catch (e) {
+            clearInterval(thinkingInterval);
+            // في حال فشل الطلب يتم سحب السؤال الأخير حتى لا ينكسر السياق في المحاولة التالية
+            chatContext.pop();
+            botMessageElement.classList.remove('loading-container');
+            botMessageElement.innerText = '❌ حدث خطأ في الاتصال';
+        }
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('printable-area');
+        const opt = { margin: 1, filename: 'ShareLook_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+        html2pdf().set(opt).from(element).save();
+    }
 </script>
 </body>
 </html>
