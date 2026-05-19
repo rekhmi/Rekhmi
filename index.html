@@ -7,184 +7,211 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --bg: #0b0e11; --card: #15191c; --primary: #1d9bf0; --text: #fff; --border: #2f3336; --error: #f4212e; --success: #4BB543; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 500px; padding-bottom: 80px; }
+        :root { 
+            --bg: #0b0e11; 
+            --card: #15191c; 
+            --primary: #1d9bf0; 
+            --primary-dark: #0d6efd; /* لون أزرق أغمق لزر الإرسال */
+            --text: #fff; 
+            --border: #2f3336; 
+            --error: #f4212e; 
+            --success: #4BB543; 
+            --muted: #71767b;
+        }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* الهيدر العلوي والقائمة */
+        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 10; }
+        .menu-btn { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
+        .menu-btn span { width: 25px; height: 2px; background: var(--text); display: block; transition: 0.3s; }
+        .app-title { font-size: 18px; font-weight: bold; color: var(--primary); }
+        
+        /* القائمة الجانبية المنسدلة */
+        .sidebar-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: 0.3s ease; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
+        .sidebar-menu.open { right: 0; }
+        .sidebar-header { display: flex; justify-content: flex-end; margin-bottom: 30px; }
+        .close-menu { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+        .menu-items { display: flex; flex-direction: column; gap: 15px; }
+        .menu-item { padding: 12px 15px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .menu-item.active { background: #1e2730; color: var(--primary); }
+        .menu-item:hover:not(.active) { background: rgba(255,255,255,0.05); }
+
+        /* حاوية الشاشات الرئيسية */
+        .screen { flex: 1; display: none; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        .screen.active { display: flex; flex-direction: column; }
+
+        /* واجهة الشات الرئيسية (ستايل جيرمني) */
+        #chat-screen { justify-content: space-between; padding: 0; }
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 20px; position: relative; }
+        
+        /* رسالة الترحيب الكبيرة والثابتة */
+        .welcome-msg { text-align: center; margin: auto; padding: 20px; max-width: 400px; }
+        .welcome-msg h1 { font-size: 32px; font-weight: bold; margin-bottom: 10px; background: linear-gradient(45deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-msg p { color: var(--muted); font-size: 16px; margin: 0; }
+        
+        /* تعديل الرسائل لتظهر حرة وبدون فقاعة كأنه نص منبثق على الشاشة */
+        .chat-messages-wrapper { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+        .msg { width: 100%; line-height: 1.7; word-wrap: break-word; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 15px; }
+        .msg p { margin: 0 0 10px 0; }
+        .msg p:last-child { margin-bottom: 0; }
+        .msg ul, .msg ol { padding-right: 20px; margin: 10px 0; }
+        .msg strong, .msg b { color: var(--primary); font-weight: bold; }
+        .msg.user { color: #fff; font-weight: 500; }
+        .msg.bot { color: #e3e3e3; }
+        
+        /* منطقة الإدخال لشاشة الشات الرئيسية */
+        .main-input-area { padding: 15px 20px; border-top: 1px solid var(--border); background: var(--bg); }
+        .input-wrapper { display: flex; background: #000; border: 1px solid var(--border); border-radius: 25px; padding: 8px 15px; align-items: center; gap: 10px; }
+        
+        /* تعديل المدخل ليكون Textarea مرنة تدعم نزول الأسطر المتعددة */
+        .input-wrapper textarea { flex: 1; border: none; background: transparent; padding: 5px; color: #fff; font-size: 16px; outline: none; font-family: sans-serif; resize: none; height: 24px; max-height: 120px; }
+        
+        /* زر الإرسال على شكل سهم/المثلث الطويل أزرق غامق */
+        .send-btn { background: var(--primary-dark); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; align-self: flex-end; }
+        .send-btn svg { width: 18px; height: 18px; fill: #fff; transform: scaleX(-1); } /* لضبط اتجاه السهم للغة العربية */
+        .send-btn:active { transform: scale(0.95); }
+        
+        /* التحذير الثابت الصغير */
+        .footer-warning { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+        /* حاسبة السيمن والنتائج (الستايل القديم) */
+        .container-calc { width: 100%; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; }
         h2, h3 { color: var(--primary); text-align: center; margin-top: 0; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; box-sizing: border-box; font-size: 16px; }
+        .card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; box-sizing: border-box; font-size: 16px; }
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .row-btns { display: flex; gap: 10px; }
-        button { flex: 1; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .container-calc button { flex: 1; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-secondary { background: #333; color: #eee; }
         .btn-success { background: var(--success); color: #fff; }
         .warning { color: var(--error); background: rgba(244, 33, 46, 0.1); padding: 10px; border-radius: 8px; font-size: 14px; margin: 10px 0; display: none; }
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .res-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
-        .note { font-size: 12px; color: #71767b; margin-top: 20px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
-        
-        /* الأيقونات السفلية */
-        .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .note { font-size: 12px; color: var(--muted); margin-top: 20px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
+
+        /* الأيقونات السفلية (تظهر فقط في شاشة حاسبة السيمن) */
+        .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: none; justify-content: space-between; align-items: center; pointer-events: none; z-index: 50; }
         .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
         .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
+        .bot-logo-btn { background: #ffffff !important; overflow: hidden; border: 2px solid var(--primary); padding: 0; display: flex; align-items: center; justify-content: center; }
+        .bot-logo-btn img { width: 140%; height: 140%; object-fit: contain; transform: translateY(12px); }
+        .tool-btn:active { transform: scale(0.95); }
 
-        /* الحل البرمجي لضبط أبعاد الصورة وعمل زووم على الكيميائي */
-        .bot-logo-btn {
-            background: #ffffff !important;
-            overflow: hidden; 
-            border: 2px solid var(--primary);
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .bot-logo-btn img {
-            width: 140%; 
-            height: 140%;
-            object-fit: contain;
-            transform: translateY(12px); 
-        }
-        .tool-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* واجهة الشات */
-        #chat-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: none; flex-direction: column; }
-        .chat-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        
-        /* تأثير الإبهار والظهور الانسيابي للفقاعات (Gemini & Grok Style) */
-        .msg { 
-            max-width: 80%; 
-            padding: 12px 16px; 
-            border-radius: 18px; 
-            line-height: 1.6; 
-            word-wrap: break-word;
-            opacity: 0;
-            transform: translateY(15px) scale(0.98);
-            animation: premiumShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transition: all 0.3s ease;
-        }
-
-        @keyframes premiumShow {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        /* ضبط هوامش النصوص المترجمة من المارك داون داخل الفقاعات */
-        .msg p { margin: 0 0 8px 0; }
-        .msg p:last-child { margin-bottom: 0; }
-        .msg ul, .msg ol { margin: 5px 0; padding-right: 20px; }
-        .msg strong, .msg b { color: #fff; font-weight: bold; }
-
-        .msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-        
-        /* تأثير الدائرة الدوارة الـ Spinner */
-        .loading-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .loading-spinner {
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 0.8s linear infinite;
-            flex-shrink: 0;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        /* تأثير الـ Spinner المطور للتفكير */
+        .loading-container { display: flex; align-items: center; gap: 12px; padding: 10px 0; color: var(--muted); }
+        .loading-spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; flex-shrink: 0; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* تنسيق الـ PDF */
-        #pdf-report { padding: 40px; color: #000; background: #fff; font-family: 'Arial', sans-serif; display: none; }
-        .pdf-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
+        #printable-area { padding: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>ShareLook AI</h2>
-    
-    <div id="step1" class="card">
-        <h3>إعدادات العينة</h3>
-        <input type="number" id="sample_vol" placeholder="حجم عينة التخفيف (µl)">
-        <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
-        <input type="number" id="total_semen_vol" placeholder="الحجم الكلي للعينة (ml)">
-        <button class="btn-primary" onclick="initCalc()">ابدأ العد</button>
+    <div class="app-header">
+        <div class="app-title">ShareLook AI</div>
+        <button class="menu-btn" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </button>
     </div>
 
-    <div id="step2" class="card" style="display:none;">
-        <h3 id="square_title">المربع 1 / 32</h3>
-        <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف؟</div>
-        
-        <label>إجمالي الحيوانات المنوية:</label>
-        <input type="number" id="current_total">
-        
-        <div id="morph_section">
-            <h4 style="margin: 10px 0 5px 0;">Morphology:</h4>
-            <input type="number" id="abn_total" placeholder="إجمالي المشوهين">
-            <input type="number" id="h_def" placeholder="عيوب الرأس">
-            <input type="number" id="n_def" placeholder="عيوب الرقبة">
-            <input type="number" id="t_def" placeholder="عيوب الذيل">
+    <div class="sidebar-menu" id="sidebar">
+        <div class="sidebar-header">
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
         </div>
+        <div class="menu-items">
+            <div class="menu-item active" id="menu-chat" onclick="navigateTo('chat')">Sharelook AI Assistant</div>
+            <div class="menu-item" id="menu-calc" onclick="navigateTo('calc')">Semen analysis calculator</div>
+            <div class="menu-item" id="menu-ocr" onclick="triggerOcrAlert()">ShareloOCR</div>
+            <div class="menu-item" id="menu-about" onclick="alert('Sharelook AI v1.0 - أداة مساعدة ذكية لكيميائي التحاليل الطبية.')">About Sharelook</div>
+        </div>
+    </div>
 
-        <div class="btn-group">
-            <div class="row-btns">
-                <button id="back_btn" class="btn-secondary" onclick="prevSquare()">العودة</button>
-                <button class="btn-primary" onclick="processSquare()">التالي</button>
+    <div id="chat-screen" class="screen active">
+        <div class="chat-container" id="chat-container-scroll">
+            <div class="welcome-msg" id="welcome-wrapper">
+                <h1>أهلاً يا دكتور</h1>
+                <p>أنا مساعدك الذكي في المختبر الطبي.. كيف يمكنني مساندتك اليوم؟ ✨</p>
             </div>
-            <button class="btn-success" onclick="showFinal()">اعرض النتيجة الآن</button>
+            <div class="chat-messages-wrapper" id="chat-messages-list"></div>
         </div>
-    </div>
-
-    <div id="results" class="card" style="display:none;">
-        <div id="printable-area">
-            <h3>النتائج التحليلية النهائيـة</h3>
-            <div id="res_conc" style="font-size: 1.1em; font-weight: bold; margin-bottom: 5px;"></div>
-            <div id="res_total_count" style="font-size: 1.1em; color: var(--primary); margin-bottom: 15px;"></div>
-            
-            <div class="results-grid">
-                <div class="res-item">الطبيعي: <span id="res_morph" style="color: var(--success);"></span></div>
-                <div class="res-item">التشوهات: <span id="res_abn_pct" style="color: var(--error);"></span></div>
-                <div class="res-item">عيوب رأس: <span id="res_h"></span></div>
-                <div class="res-item">عيوب رقبة: <span id="res_n"></span></div>
-                <div class="res-item">عيوب ذيل: <span id="res_t"></span></div>
+        
+        <div class="main-input-area">
+            <div class="input-wrapper">
+                <textarea id="chat-input" placeholder="اسأل عن أي شيء..." onkeydown="handleChatKey(event)" oninput="autoGrow(this)"></textarea>
+                <button class="send-btn" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
             </div>
-            <div class="note">بناءً على عد <span id="res_sq_count"></span> مربعاً</div>
+            <div class="footer-warning">Sharelook هو نموذج ذكاء اصطناعي وقد يحدث أخطاء.</div>
         </div>
-        <button class="btn-primary" style="margin-top:15px" onclick="downloadPDF()">تحميل النتيجة PDF</button>
-        <button class="btn-secondary" style="margin-top:10px" onclick="location.reload()">تحليل جديد</button>
     </div>
-</div>
 
-<div class="bottom-tools">
-    <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المععده بالذكاء الاصطناعي ✨')">📄🔍</div>
-    <div class="tool-btn bot-logo-btn" onclick="toggleChat()">
-        <img src="shaelook.png" alt="ShareLook AI">
-    </div>
-</div>
+    <div id="calc-screen" class="screen">
+        <div class="container-calc">
+            <div id="step1" class="card">
+                <h3>إعدادات العينة</h3>
+                <input type="number" id="sample_vol" placeholder="حجم عينة التخفيف (µl)">
+                <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
+                <input type="number" id="total_semen_vol" placeholder="الحجم الكلي للعينة (ml)">
+                <button class="btn-primary" onclick="initCalc()">ابدأ العد</button>
+            </div>
 
-<div id="chat-window">
-    <div class="chat-header">
-        <span>ShareLook AI Assistant</span>
-        <button onclick="toggleChat()" style="background:none; color:#fff; font-size:24px;">✕</button>
+            <div id="step2" class="card" style="display:none;">
+                <h3 id="square_title">المربع 1 / 32</h3>
+                <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف？</div>
+                
+                <label>إجمالي الحيوانات المنوية:</label>
+                <input type="number" id="current_total">
+                
+                <div id="morph_section">
+                    <h4 style="margin: 10px 0 5px 0;">Morphology:</h4>
+                    <input type="number" id="abn_total" placeholder="إجمالي المشوهين">
+                    <input type="number" id="h_def" placeholder="عيوب الرأس">
+                    <input type="number" id="n_def" placeholder="عيوب الرقبة">
+                    <input type="number" id="t_def" placeholder="عيوب الذيل">
+                </div>
+
+                <div class="btn-group">
+                    <div class="row-btns">
+                        <button id="back_btn" class="btn-secondary" onclick="prevSquare()">العودة</button>
+                        <button class="btn-primary" onclick="processSquare()">التالي</button>
+                    </div>
+                    <button class="btn-success" onclick="showFinal()">اعرض النتيجة الآن</button>
+                </div>
+            </div>
+
+            <div id="results" class="card" style="display:none;">
+                <div id="printable-area">
+                    <h3>النتائج التحليلية النهائيـة</h3>
+                    <div id="res_conc" style="font-size: 1.1em; font-weight: bold; margin-bottom: 5px;"></div>
+                    <div id="res_total_count" style="font-size: 1.1em; color: var(--primary); margin-bottom: 15px;"></div>
+                    
+                    <div class="results-grid">
+                        <div class="res-item">الطبيعي: <span id="res_morph" style="color: var(--success);"></span></div>
+                        <div class="res-item">التشوهات: <span id="res_abn_pct" style="color: var(--error);"></span></div>
+                        <div class="res-item">عيوب رأس: <span id="res_h"></span></div>
+                        <div class="res-item">عيوب رقبة: <span id="res_n"></span></div>
+                        <div class="res-item">عيوب ذيل: <span id="res_t"></span></div>
+                    </div>
+                    <div class="note">بناءً على عد <span id="res_sq_count"></span> مربعاً</div>
+                </div>
+                <button class="btn-primary" style="margin-top:15px" onclick="downloadPDF()">تحميل النتيجة PDF</button>
+                <button class="btn-secondary" style="margin-top:10px" onclick="resetCalc()">تحليل جديد</button>
+            </div>
+        </div>
     </div>
-    <div class="chat-messages" id="chat-msgs">
-        <div class="msg bot">أهلاً يا دكتور، أقدر أساعدك إزاي?! ✨</div>
+
+    <div class="bottom-tools" id="calc-bottom-bars">
+        <div class="tool-btn ocr-btn" onclick="triggerOcrAlert()">📄🔍</div>
+        <div class="tool-btn bot-logo-btn" onclick="navigateTo('chat')">
+            <img src="shaelook.png" alt="ShareLook AI">
+        </div>
     </div>
-    <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا...">
-        <button class="btn-primary" style="width:70px;" onclick="sendMessage()">إرسال</button>
-    </div>
-</div>
 
 <script>
     let state = {
@@ -192,9 +219,65 @@
         history: [], morphDone: false, overloadIgnored: false
     };
 
-    // مصفوفة عالمية للاحتفاظ بسياق المحادثة الممتد لنموذج جيرمني
     let chatContext = [];
 
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('open');
+    }
+
+    function navigateTo(target) {
+        toggleMenu(); 
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        
+        const bottomTools = document.getElementById('calc-bottom-bars');
+
+        if (target === 'chat') {
+            document.getElementById('chat-screen').classList.add('active');
+            document.getElementById('menu-chat').classList.add('active');
+            bottomTools.style.display = 'none'; 
+        } else if (target === 'calc') {
+            document.getElementById('calc-screen').classList.add('active');
+            document.getElementById('menu-calc').classList.add('active');
+            bottomTools.style.display = 'flex'; 
+        }
+    }
+
+    function triggerOcrAlert() {
+        alert('قريباً.. قارئ للروشتات المعقدة بالذكاء الاصطناعي ✨');
+    }
+
+    /* ميكانيزم التحكم الذكي في أزرار لوحة الكيبورد (Enter & Shift+Enter) للأجهزة والموبايل */
+    function handleChatKey(event) {
+        // فحص ما إذا كان المستخدم يفتح الأبلكيشن عبر هاتف محمول/تابلت
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (event.key === 'Enter') {
+            if (isMobile) {
+                // على الموبايل: زر الـ Enter الافتراضي يترك لينزل سطر جديد تلقائياً
+                return;
+            } else {
+                // على اللاب توب والكمبيوتر
+                if (event.shiftKey) {
+                    // Shift + Enter ◀️ اسمح بنزول سطر جديد ولا تبعت
+                    return;
+                } else {
+                    // Enter فقط ◀️ امنع السلوك الافتراضي لعدم نزول سطر، ونفذ الإرسال فوراً
+                    event.preventDefault();
+                    sendMessage();
+                }
+            }
+        }
+    }
+
+    /* دالة تمديد التيكست اريا رأسياً بشكل انسيابي أثناء كتابة نصوص متعددة الأسطر */
+    function autoGrow(element) {
+        element.style.height = "24px";
+        element.style.height = (element.scrollHeight - 10) + "px";
+    }
+
+    /* ميكانيزم تشغيل الحاسبة (بدون تعديل بالـ Logic) */
     function initCalc() {
         state.sampleV = parseFloat(document.getElementById('sample_vol').value) || 0;
         state.diluentV = parseFloat(document.getElementById('diluent_vol').value) || 0;
@@ -211,7 +294,7 @@
         if (!state.morphDone && data.abn > data.t) return alert(`خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t})`);
         
         if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
-            if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return location.reload();
+            if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return resetCalc();
             state.overloadIgnored = true;
         }
 
@@ -271,28 +354,38 @@
         document.getElementById('res_sq_count').innerText = squaresCounted;
     }
 
-    function toggleChat() {
-        const win = document.getElementById('chat-window');
-        win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+    function resetCalc() {
+        state = { current: 1, sampleV: 0, diluentV: 0, totalSemenV: 0, history: [], morphDone: false, overloadIgnored: false };
+        document.getElementById('sample_vol').value = "";
+        document.getElementById('diluent_vol').value = "";
+        document.getElementById('total_semen_vol').value = "";
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step1').style.display = 'block';
     }
 
+    /* محرك الشات المطور وحذف الفقاعات وإعادة بناء كلمات التفكير */
     async function sendMessage() {
         const input = document.getElementById('chat-input');
         if (!input.value.trim()) return;
         
         const question = input.value;
         input.value = "";
-        
-        const msgs = document.getElementById('chat-msgs');
-        msgs.innerHTML += `<div class="msg user">${question}</div>`;
+        input.style.height = "24px"; // إعادة ضبط الارتفاع الافتراضي للتيكست اريا بعد الإرسال
+
+        // إخفاء رسالة الترحيب الكبيرة فور إرسال أول رسالة ليبدأ حوار جيرمني الصريح
+        const welcome = document.getElementById('welcome-wrapper');
+        if(welcome) welcome.style.display = 'none';
+
+        const msgsList = document.getElementById('chat-messages-list');
+        msgsList.innerHTML += `<div class="msg user">${question}</div>`;
         
         const botMessageElement = document.createElement('div');
         botMessageElement.className = 'msg bot loading-container';
         
         const thinkingSteps = [
-            "🔍 جاري مراجعة وتحليل الفحص الطبي...",
-            "🧬 فحص تأثير التحليل والبروتوكول المخبري...",
-            "📝 جاري صياغة التوصية الطبية والرد النهائي..."
+            "جاري البحث...",
+            "جاري كتابة الرد..."
         ];
         let stepIndex = 0;
 
@@ -300,13 +393,15 @@
             <div class="loading-spinner"></div>
             <span id="thinking-text">${thinkingSteps[0]}</span>
         `;
-        msgs.appendChild(botMessageElement);
-        msgs.scrollTop = msgs.scrollHeight;
+        msgsList.appendChild(botMessageElement);
+        
+        const scrollContainer = document.getElementById('chat-container-scroll');
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
 
         const thinkingInterval = setInterval(() => {
-            stepIndex++;
+            stepIndex = (stepIndex + 1) % thinkingSteps.length;
             const textElement = document.getElementById("thinking-text");
-            if (textElement && stepIndex < thinkingSteps.length) {
+            if (textElement) {
                 textElement.style.opacity = 0;
                 setTimeout(() => {
                     textElement.innerText = thinkingSteps[stepIndex];
@@ -315,22 +410,18 @@
             }
         }, 2000);
 
-        // دفع السؤال الجديد إلى مصفوفة السياق بالهيكل القياسي
         chatContext.push({ role: "user", parts: [{ text: question }] });
 
         try {
             const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                // إرسال المصفوفة الكاملة التي تحمل نسيج المحادثة بالكامل بدلاً من سؤال منفرد
                 body: JSON.stringify({ history: chatContext })
             });
             
             const data = await response.json();
-            
             clearInterval(thinkingInterval);
             
-            // تخزين إجابة النموذج الراجعة في المصفوفة للحفاظ على تتابع الحوار مستقبلاً
             chatContext.push({ role: "model", parts: [{ text: data.answer }] });
             
             botMessageElement.style.opacity = 0;
@@ -338,17 +429,16 @@
                 botMessageElement.classList.remove('loading-container');
                 botMessageElement.innerHTML = marked.parse(data.answer);
                 botMessageElement.style.opacity = 1;
-                msgs.scrollTop = msgs.scrollHeight;
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
             }, 150);
             
         } catch (e) {
             clearInterval(thinkingInterval);
-            // في حال فشل الطلب يتم سحب السؤال الأخير حتى لا ينكسر السياق في المحاولة التالية
             chatContext.pop();
             botMessageElement.classList.remove('loading-container');
             botMessageElement.innerText = '❌ حدث خطأ في الاتصال';
         }
-        msgs.scrollTop = msgs.scrollHeight;
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
 
     function downloadPDF() {
