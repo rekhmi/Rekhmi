@@ -208,7 +208,7 @@
     function processSquare() {
         saveCurrentState();
         const data = state.history[state.current - 1];
-        if (!state.morphDone && data.abn > data.t) return alert(خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t}));
+        if (!state.morphDone && data.abn > data.t) return alert(`خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t})`);
         
         if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
             if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return location.reload();
@@ -234,7 +234,7 @@
     }
 
     function updateUI() {
-        document.getElementById('square_title').innerText = المربع ${state.current} / 32;
+        document.getElementById('square_title').innerText = `المربع ${state.current} / 32`;
         const val = state.history[state.current - 1] || {t:"", abn:"", h:"", n:"", t_def:""};
         document.getElementById('current_total').value = val.t;
         document.getElementById('abn_total').value = val.abn;
@@ -261,8 +261,8 @@
         document.getElementById('step2').style.display = 'none';
         document.getElementById('results').style.display = 'block';
         
-        document.getElementById('res_conc').innerText = Concentration: ${conc.toLocaleString()} /ml;
-        document.getElementById('res_total_count').innerText = Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate;
+        document.getElementById('res_conc').innerText = `Concentration: ${conc.toLocaleString()} /ml`;
+        document.getElementById('res_total_count').innerText = `Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate`;
         document.getElementById('res_morph').innerText = normalPct.toFixed(1) + "%";
         document.getElementById('res_abn_pct').innerText = abnPct.toFixed(1) + "%";
         document.getElementById('res_h').innerText = ((state.history.reduce((s,i)=>s+i.h,0)/totalInSquares)*100).toFixed(1) + "%";
@@ -284,7 +284,7 @@
         input.value = "";
         
         const msgs = document.getElementById('chat-msgs');
-        msgs.innerHTML += <div class="msg user">${question}</div>;
+        msgs.innerHTML += `<div class="msg user">${question}</div>`;
         
         const botMessageElement = document.createElement('div');
         botMessageElement.className = 'msg bot loading-container';
