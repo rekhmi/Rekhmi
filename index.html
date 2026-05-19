@@ -161,7 +161,7 @@
                 <path d="M12 9v4"></path>
             </svg>
         </button>
-        <div style="font-weight: bold; font-size: 18px; letter-spacing: 0.5px; color: var(--primary);">ShareLook AI</div>
+        <div style="font-weight: bold; font-size: 18px; letter-spacing: 0.5px; color: var(--primary);">Rekhmi AI</div>
         <button class="header-btn" onclick="toggleDrawer()" title="القائمة">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="4" y1="8" x2="20" y2="8"></line>
@@ -278,7 +278,7 @@
         <div class="bottom-tools" id="calc-bottom-bar">
             <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المعقدة بالذكاء الاصطناعي ✨')">📄🔍</div>
             <div class="tool-btn bot-logo-btn" onclick="switchView('chat')">
-                <img src="shaelook.png" alt="Rekhmi AI" onerror="this.style.display='none'">
+                <img src="shaelook.png" alt="ShareLook AI" onerror="this.style.display='none'">
                 <span style="font-size: 14px; color:#000; font-weight:bold;">Chat</span>
             </div>
         </div>
@@ -290,7 +290,7 @@
             <div class="about-card">
                 <div class="about-logo">🧬✨</div>
                 <h3>حول تطبيق Rekhmi</h3>
-                <p><strong>Rekhmi</strong> هو تطبيق ويب مساعد ذكي مدعوم بالذكاء الاصطناعي ، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة.</p>
+                <p><strong>Rekhmi</strong> هو تطبيق ويب ومساعد ذكي مدعوم بالذكاء الاصطناعي، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة.</p>
                 <button class="btn-primary" style="padding: 10px 24px; margin-top: 15px;" onclick="switchView('chat')">ابدأ استخدام المساعد الذكي الآن</button>
             </div>
         </div>
@@ -304,7 +304,7 @@
             history: [], morphDone: false, overloadIgnored: false
         };
 
-        // مصفوفة الاحتفاظ بسياق المحادثة الممتد لنموذج جيمني
+        // مصفوفة الاحتفاظ بسياق المحادثة الممتد لنموذج جيرمني
         let chatContext = [];
 
         // إدارة واجهات العرض (Views) والقائمة الجانبية
@@ -459,7 +459,7 @@
             } catch (e) {
                 clearTimeout(thinkingTimeout);
                 chatContext.pop(); // التراجع للحفاظ على تماسك مصفوفة السياق
-                botMessageElement.innerHTML = <span style="color:var(--error);">❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.</span>;
+                botMessageElement.innerHTML = `<span style="color:var(--error);">❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.</span>`;
             }
             msgsContainer.scrollTop = msgsContainer.scrollHeight;
         }
@@ -479,7 +479,7 @@
         function processSquare() {
             saveCurrentState();
             const data = state.history[state.current - 1];
-            if (!state.morphDone && data.abn > data.t) return alert(خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t}));
+            if (!state.morphDone && data.abn > data.t) return alert(`خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t})`);
             
             if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
                 if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return resetCalculatorOnly();
@@ -505,7 +505,7 @@
         }
 
         function updateUI() {
-            document.getElementById('square_title').innerText = المربع ${state.current} / 32;
+            document.getElementById('square_title').innerText = `المربع ${state.current} / 32`;
             const val = state.history[state.current - 1] || {t:"", abn:"", h:"", n:"", t_def:""};
             document.getElementById('current_total').value = val.t;
             document.getElementById('abn_total').value = val.abn;
@@ -532,8 +532,8 @@
             document.getElementById('step2').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             
-            document.getElementById('res_conc').innerText = Concentration: ${conc.toLocaleString()} /ml;
-            document.getElementById('res_total_count').innerText = Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate;
+            document.getElementById('res_conc').innerText = `Concentration: ${conc.toLocaleString()} /ml`;
+            document.getElementById('res_total_count').innerText = `Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate`;
             document.getElementById('res_morph').innerText = normalPct.toFixed(1) + "%";
             document.getElementById('res_abn_pct').innerText = abnPct.toFixed(1) + "%";
             document.getElementById('res_h').innerText = ((state.history.reduce((s,i)=>s+i.h,0)/totalInSquares)*100).toFixed(1) + "%";
@@ -544,7 +544,7 @@
 
         function downloadPDF() {
             const element = document.getElementById('printable-area');
-            const opt = { margin: 1, filename: 'Rekhmi_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            const opt = { margin: 1, filename: 'ShareLook_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save();
         }
 
