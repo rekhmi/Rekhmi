@@ -11,23 +11,31 @@
             --bg: #0b0e11; 
             --card: #15191c; 
             --primary: #1d9bf0; 
-            --primary-dark: #0d6efd; /* لون أزرق أغمق لزر الإرسال */
+            --primary-dark: #0d6efd; 
             --text: #fff; 
             --border: #2f3336; 
             --error: #f4212e; 
             --success: #4BB543; 
             --muted: #71767b;
+            --user-bubble: #202429; /* لون فقاعة المستخدم الرمادي الغامق */
         }
+        * { box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         /* الهيدر العلوي والقائمة */
-        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 10; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 10; height: 56px; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
         .menu-btn { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
         .menu-btn span { width: 25px; height: 2px; background: var(--text); display: block; transition: 0.3s; }
         .app-title { font-size: 18px; font-weight: bold; color: var(--primary); }
         
+        /* زرار شات جديد الفوقاني (أيقونة خطية لقلم داخل فقاعة) */
+        .new-chat-btn { background: none; border: none; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: background 0.2s; }
+        .new-chat-btn:hover { background: rgba(255,255,255,0.05); }
+        .new-chat-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
         /* القائمة الجانبية المنسدلة */
-        .sidebar-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: 0.3s ease; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
+        .sidebar-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: 0.3s ease; padding: 20px; display: flex; flex-direction: column; }
         .sidebar-menu.open { right: 0; }
         .sidebar-header { display: flex; justify-content: flex-end; margin-bottom: 30px; }
         .close-menu { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
@@ -37,48 +45,50 @@
         .menu-item:hover:not(.active) { background: rgba(255,255,255,0.05); }
 
         /* حاوية الشاشات الرئيسية */
-        .screen { flex: 1; display: none; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        .screen { flex: 1; display: none; overflow-y: auto; padding: 20px; }
         .screen.active { display: flex; flex-direction: column; }
 
-        /* واجهة الشات الرئيسية (ستايل جيرمني) */
-        #chat-screen { justify-content: space-between; padding: 0; }
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 20px; position: relative; }
+        /* واجهة الشات الرئيسية */
+        #chat-screen { justify-content: space-between; padding: 0; height: calc(100vh - 56px); }
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 15px; position: relative; }
         
         /* رسالة الترحيب الكبيرة والثابتة */
         .welcome-msg { text-align: center; margin: auto; padding: 20px; max-width: 400px; }
         .welcome-msg h1 { font-size: 32px; font-weight: bold; margin-bottom: 10px; background: linear-gradient(45deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .welcome-msg p { color: var(--muted); font-size: 16px; margin: 0; }
         
-        /* تعديل الرسائل لتظهر حرة وبدون فقاعة كأنه نص منبثق على الشاشة */
-        .chat-messages-wrapper { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
-        .msg { width: 100%; line-height: 1.7; word-wrap: break-word; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 15px; }
+        /* ضبط الرسائل والفقاعات الجديدة */
+        .chat-messages-wrapper { display: flex; flex-direction: column; gap: 20px; padding-bottom: 10px; }
+        .msg { width: 100%; line-height: 1.7; word-wrap: break-word; font-size: 16px; }
         .msg p { margin: 0 0 10px 0; }
         .msg p:last-child { margin-bottom: 0; }
         .msg ul, .msg ol { padding-right: 20px; margin: 10px 0; }
         .msg strong, .msg b { color: var(--primary); font-weight: bold; }
-        .msg.user { color: #fff; font-weight: 500; }
-        .msg.bot { color: #e3e3e3; }
         
-        /* منطقة الإدخال لشاشة الشات الرئيسية */
-        .main-input-area { padding: 15px 20px; border-top: 1px solid var(--border); background: var(--bg); }
-        .input-wrapper { display: flex; background: #000; border: 1px solid var(--border); border-radius: 25px; padding: 8px 15px; align-items: center; gap: 10px; }
+        /* فقاعة المستخدم المحدثة */
+        .msg.user { color: #fff; background: var(--user-bubble); padding: 12px 16px; border-radius: 18px 18px 0 18px; align-self: flex-start; max-width: 85%; border: 1px solid rgba(255,255,255,0.02); }
         
-        /* تعديل المدخل ليكون Textarea مرنة تدعم نزول الأسطر المتعددة */
-        .input-wrapper textarea { flex: 1; border: none; background: transparent; padding: 5px; color: #fff; font-size: 16px; outline: none; font-family: sans-serif; resize: none; height: 24px; max-height: 120px; }
+        /* رد البوت الحر وبدون أي فقاعات */
+        .msg.bot { color: #e3e3e3; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 15px; width: 100%; }
         
-        /* زر الإرسال على شكل سهم/المثلث الطويل أزرق غامق */
-        .send-btn { background: var(--primary-dark); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; align-self: flex-end; }
-        .send-btn svg { width: 18px; height: 18px; fill: #fff; transform: scaleX(-1); } /* لضبط اتجاه السهم للغة العربية */
+        /* منطقة الإدخال لشاشة الشات الرئيسية ومراعاة أبعاد الموبايل الكلية */
+        .main-input-area { padding: 10px 15px; border-top: 1px solid var(--border); background: var(--bg); width: 100%; box-sizing: border-box; }
+        .input-wrapper { display: flex; background: #000; border: 1px solid var(--border); border-radius: 25px; padding: 6px 12px; align-items: center; gap: 10px; }
+        
+        .input-wrapper textarea { flex: 1; border: none; background: transparent; padding: 5px; color: #fff; font-size: 16px; outline: none; font-family: sans-serif; resize: none; height: 26px; max-height: 100px; line-height: 20px; }
+        
+        .send-btn { background: var(--primary-dark); border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; align-self: flex-end; }
+        .send-btn svg { width: 16px; height: 16px; fill: #fff; transform: scaleX(-1); } 
         .send-btn:active { transform: scale(0.95); }
         
-        /* التحذير الثابت الصغير */
-        .footer-warning { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; }
+        /* تحسين ظهور التحذير على كافة الشاشات والموبايل */
+        .footer-warning { text-align: center; font-size: 11px; color: var(--muted); margin-top: 6px; width: 100%; display: block; }
 
-        /* حاسبة السيمن والنتائج (الستايل القديم) */
+        /* حاسبة السيمن والنتائج */
         .container-calc { width: 100%; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; }
         h2, h3 { color: var(--primary); text-align: center; margin-top: 0; }
-        .card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; box-sizing: border-box; font-size: 16px; }
+        .card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: #fff; font-size: 16px; }
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .row-btns { display: flex; gap: 10px; }
         .container-calc button { flex: 1; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
@@ -90,7 +100,7 @@
         .res-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
         .note { font-size: 12px; color: var(--muted); margin-top: 20px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
 
-        /* الأيقونات السفلية (تظهر فقط في شاشة حاسبة السيمن) */
+        /* الأيقونات السفلية */
         .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: none; justify-content: space-between; align-items: center; pointer-events: none; z-index: 50; }
         .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; transition: 0.2s; }
         .ocr-btn { background: #2f3336; filter: grayscale(0.8); }
@@ -98,22 +108,30 @@
         .bot-logo-btn img { width: 140%; height: 140%; object-fit: contain; transform: translateY(12px); }
         .tool-btn:active { transform: scale(0.95); }
 
-        /* تأثير الـ Spinner المطور للتفكير */
+        /* تأثير الـ Spinner المطور لتفكير البوت */
         .loading-container { display: flex; align-items: center; gap: 12px; padding: 10px 0; color: var(--muted); }
         .loading-spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; flex-shrink: 0; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* تنسيق الـ PDF */
         #printable-area { padding: 10px; }
     </style>
 </head>
 <body>
 
     <div class="app-header">
-        <div class="app-title">ShareLook AI</div>
-        <button class="menu-btn" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
+        <div class="header-right">
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+            </button>
+            <div class="app-title">ShareLook AI</div>
+        </div>
+        <button class="new-chat-btn" onclick="createNewChat()" title="شات جديد">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M10 11h4"></path>
+                <path d="M12 9v4"></path>
+            </svg>
         </button>
     </div>
 
@@ -227,7 +245,9 @@
     }
 
     function navigateTo(target) {
-        toggleMenu(); 
+        if(document.getElementById('sidebar').classList.contains('open')) {
+            toggleMenu(); 
+        }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         
@@ -248,22 +268,27 @@
         alert('قريباً.. قارئ للروشتات المعقدة بالذكاء الاصطناعي ✨');
     }
 
-    /* ميكانيزم التحكم الذكي في أزرار لوحة الكيبورد (Enter & Shift+Enter) للأجهزة والموبايل */
+    /* دالة تصفير المحادثة والبدء من الصفر */
+    function createNewChat() {
+        chatContext = [];
+        document.getElementById('chat-messages-list').innerHTML = "";
+        const welcome = document.getElementById('welcome-wrapper');
+        if(welcome) welcome.style.display = 'block';
+        document.getElementById('chat-input').value = "";
+        document.getElementById('chat-input').style.height = "26px";
+        navigateTo('chat');
+    }
+
     function handleChatKey(event) {
-        // فحص ما إذا كان المستخدم يفتح الأبلكيشن عبر هاتف محمول/تابلت
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         if (event.key === 'Enter') {
             if (isMobile) {
-                // على الموبايل: زر الـ Enter الافتراضي يترك لينزل سطر جديد تلقائياً
                 return;
             } else {
-                // على اللاب توب والكمبيوتر
                 if (event.shiftKey) {
-                    // Shift + Enter ◀️ اسمح بنزول سطر جديد ولا تبعت
                     return;
                 } else {
-                    // Enter فقط ◀️ امنع السلوك الافتراضي لعدم نزول سطر، ونفذ الإرسال فوراً
                     event.preventDefault();
                     sendMessage();
                 }
@@ -271,13 +296,88 @@
         }
     }
 
-    /* دالة تمديد التيكست اريا رأسياً بشكل انسيابي أثناء كتابة نصوص متعددة الأسطر */
     function autoGrow(element) {
-        element.style.height = "24px";
-        element.style.height = (element.scrollHeight - 10) + "px";
+        element.style.height = "26px";
+        element.style.height = (element.scrollHeight - 6) + "px";
     }
 
-    /* ميكانيزم تشغيل الحاسبة (بدون تعديل بالـ Logic) */
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        if (!input.value.trim()) return;
+        
+        const question = input.value;
+        input.value = "";
+        input.style.height = "26px";
+
+        const welcome = document.getElementById('welcome-wrapper');
+        if(welcome) welcome.style.display = 'none';
+
+        const msgsList = document.getElementById('chat-messages-list');
+        // إرجاع الفقاعة للمستخدم (حسابات محاذاة وستايل مخصص)
+        msgsList.innerHTML += `<div class="msg user">${question}</div>`;
+        
+        const botMessageElement = document.createElement('div');
+        botMessageElement.className = 'msg bot loading-container';
+        
+        const thinkingSteps = [
+            "جاري البحث...",
+            "جاري كتابة الرد..."
+        ];
+        let stepIndex = 0;
+
+        botMessageElement.innerHTML = `
+            <div class="loading-spinner"></div>
+            <span id="thinking-text">${thinkingSteps[0]}</span>
+        `;
+        msgsList.appendChild(botMessageElement);
+        
+        const scrollContainer = document.getElementById('chat-container-scroll');
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+
+        const thinkingInterval = setInterval(() => {
+            stepIndex = (stepIndex + 1) % thinkingSteps.length;
+            const textElement = document.getElementById("thinking-text");
+            if (textElement) {
+                textElement.style.opacity = 0;
+                setTimeout(() => {
+                    textElement.innerText = thinkingSteps[stepIndex];
+                    textElement.style.opacity = 1;
+                }, 200);
+            }
+        }, 2000);
+
+        chatContext.push({ role: "user", parts: [{ text: question }] });
+
+        try {
+            const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ history: chatContext })
+            });
+            
+            const data = await response.json();
+            clearInterval(thinkingInterval);
+            
+            chatContext.push({ role: "model", parts: [{ text: data.answer }] });
+            
+            botMessageElement.style.opacity = 0;
+            setTimeout(() => {
+                botMessageElement.classList.remove('loading-container');
+                botMessageElement.innerHTML = marked.parse(data.answer);
+                botMessageElement.style.opacity = 1;
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            }, 150);
+            
+        } catch (e) {
+            clearInterval(thinkingInterval);
+            chatContext.pop();
+            botMessageElement.classList.remove('loading-container');
+            botMessageElement.innerText = '❌ حدث خطأ في الاتصال';
+        }
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+
+    /* ميكانيزم تشغيل الحاسبة */
     function initCalc() {
         state.sampleV = parseFloat(document.getElementById('sample_vol').value) || 0;
         state.diluentV = parseFloat(document.getElementById('diluent_vol').value) || 0;
@@ -362,83 +462,6 @@
         document.getElementById('results').style.display = 'none';
         document.getElementById('step2').style.display = 'none';
         document.getElementById('step1').style.display = 'block';
-    }
-
-    /* محرك الشات المطور وحذف الفقاعات وإعادة بناء كلمات التفكير */
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        if (!input.value.trim()) return;
-        
-        const question = input.value;
-        input.value = "";
-        input.style.height = "24px"; // إعادة ضبط الارتفاع الافتراضي للتيكست اريا بعد الإرسال
-
-        // إخفاء رسالة الترحيب الكبيرة فور إرسال أول رسالة ليبدأ حوار جيرمني الصريح
-        const welcome = document.getElementById('welcome-wrapper');
-        if(welcome) welcome.style.display = 'none';
-
-        const msgsList = document.getElementById('chat-messages-list');
-        msgsList.innerHTML += `<div class="msg user">${question}</div>`;
-        
-        const botMessageElement = document.createElement('div');
-        botMessageElement.className = 'msg bot loading-container';
-        
-        const thinkingSteps = [
-            "جاري البحث...",
-            "جاري كتابة الرد..."
-        ];
-        let stepIndex = 0;
-
-        botMessageElement.innerHTML = `
-            <div class="loading-spinner"></div>
-            <span id="thinking-text">${thinkingSteps[0]}</span>
-        `;
-        msgsList.appendChild(botMessageElement);
-        
-        const scrollContainer = document.getElementById('chat-container-scroll');
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-
-        const thinkingInterval = setInterval(() => {
-            stepIndex = (stepIndex + 1) % thinkingSteps.length;
-            const textElement = document.getElementById("thinking-text");
-            if (textElement) {
-                textElement.style.opacity = 0;
-                setTimeout(() => {
-                    textElement.innerText = thinkingSteps[stepIndex];
-                    textElement.style.opacity = 1;
-                }, 200);
-            }
-        }, 2000);
-
-        chatContext.push({ role: "user", parts: [{ text: question }] });
-
-        try {
-            const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ history: chatContext })
-            });
-            
-            const data = await response.json();
-            clearInterval(thinkingInterval);
-            
-            chatContext.push({ role: "model", parts: [{ text: data.answer }] });
-            
-            botMessageElement.style.opacity = 0;
-            setTimeout(() => {
-                botMessageElement.classList.remove('loading-container');
-                botMessageElement.innerHTML = marked.parse(data.answer);
-                botMessageElement.style.opacity = 1;
-                scrollContainer.scrollTop = scrollContainer.scrollHeight;
-            }, 150);
-            
-        } catch (e) {
-            clearInterval(thinkingInterval);
-            chatContext.pop();
-            botMessageElement.classList.remove('loading-container');
-            botMessageElement.innerText = '❌ حدث خطأ في الاتصال';
-        }
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
 
     function downloadPDF() {
