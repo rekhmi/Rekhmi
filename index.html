@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareLook AI</title>
+    <title>Rekhmi AI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -175,10 +175,10 @@
         <div style="display: flex; justify-content: flex-end; padding-bottom: 10px;">
             <button class="header-btn" onclick="toggleDrawer()">✕</button>
         </div>
-        <div class="menu-item active" id="menu-chat" onclick="switchView('chat')">Sharelook AI Assistant</div>
+        <div class="menu-item active" id="menu-chat" onclick="switchView('chat')">Rekhmi AI Assistant</div>
         <div class="menu-item" id="menu-calc" onclick="switchView('calc')">Semen analysis calculator</div>
-        <div class="menu-item disabled" onclick="alert('قريباً.. قارئ ذكي للروشتات المعقدة ✨')">ShareloOCR</div>
-        <div class="menu-item" id="menu-about" onclick="switchView('about')">About Sharelook</div>
+        <div class="menu-item disabled" onclick="alert('قريباً.. قارئ ذكي للروشتات المعقدة ✨')">RekhOCR</div>
+        <div class="menu-item" id="menu-about" onclick="switchView('about')">About Rekhmi</div>
     </nav>
 
 
@@ -214,7 +214,7 @@
                     </svg>
                 </button>
             </div>
-            <p class="disclaimer-text">Sharelook هو نموذج ذكاء اصطناعي وقد يحدث أخطاء</p>
+            <p class="disclaimer-text">Rekhmi هو نموذج ذكاء اصطناعي وقد يحدث أخطاء</p>
         </div>
     </main>
 
@@ -290,7 +290,7 @@
             <div class="about-card">
                 <div class="about-logo">🧬✨</div>
                 <h3>حول تطبيق Sharelook</h3>
-                <p><strong>Sharelook</strong> هو تطبيق ويب متكامل ومساعد ذكي مدعوم بالذكاء الاصطناعي التوليدي، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية والتشخيص المخبري في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة.</p>
+                <p><strong>Rekhmi</strong> هو تطبيق ويب مساعد ذكي مدعوم بالذكاء الاصطناعي ، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة.</p>
                 <button class="btn-primary" style="padding: 10px 24px; margin-top: 15px;" onclick="switchView('chat')">ابدأ استخدام المساعد الذكي الآن</button>
             </div>
         </div>
@@ -304,7 +304,7 @@
             history: [], morphDone: false, overloadIgnored: false
         };
 
-        // مصفوفة الاحتفاظ بسياق المحادثة الممتد لنموذج جيرمني
+        // مصفوفة الاحتفاظ بسياق المحادثة الممتد لنموذج جيمني
         let chatContext = [];
 
         // إدارة واجهات العرض (Views) والقائمة الجانبية
@@ -544,7 +544,7 @@
 
         function downloadPDF() {
             const element = document.getElementById('printable-area');
-            const opt = { margin: 1, filename: 'ShareLook_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            const opt = { margin: 1, filename: 'Rekhmi_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save();
         }
 
