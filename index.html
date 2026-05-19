@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -48,11 +47,13 @@
             align-items: center;
             justify-content: center;
         }
+        /* إضافة منع استقبال الإشارات هنا لمنع تعطيل الـ Click Event */
         .bot-logo-btn img {
             width: 140%; 
             height: 140%;
             object-fit: contain;
             transform: translateY(12px); 
+            pointer-events: none; 
         }
         .tool-btn:active {
             transform: scale(0.95);
