@@ -24,7 +24,6 @@
 
 * **Language:** JavaScript
 * **Backend:** Cloudflare Workers (Edge Computing)
-* **AI Engine:** Gemini API
 * **Frontend:** HTML5 / CSS3 / JavaScript (Responsive UI)
 
 ---
@@ -62,7 +61,6 @@ You can try the tool directly and for free through the following link:
 
 * **Language:** JavaScript
 * **Backend:** Cloudflare Workers (Edge Computing)
-* **AI Engine:** Gemini API
 * **Frontend:** HTML5 / CSS3 / JavaScript (Responsive UI)
 
 ---
