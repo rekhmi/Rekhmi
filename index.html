@@ -78,7 +78,7 @@
             background-repeat: repeat;
         }
 
-        .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; padding-bottom: 120px; scroll-behavior: smooth; position: relative; z-index: 1; }
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; padding-bottom: 150px; scroll-behavior: smooth; position: relative; z-index: 1; }
         
         /* واجهة الترحيب وشعار آتون الفرعوني الطبي */
         .welcome-wrapper { text-align: center; margin: auto 0; padding: 40px 10px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
@@ -158,6 +158,41 @@
         .thinking-wrapper { display: flex; align-items: center; gap: 10px; color: var(--text-dimmed); font-size: 15px; font-style: italic; padding: 10px 0; }
         .small-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--primary); animation: rotateSpin 0.8s linear infinite; }
         @keyframes rotateSpin { to { transform: rotate(360deg); } }
+
+        /* الاستايلات الجديدة الخاصة بمعاينة وإضافة الصور المتعددة بالشات */
+        .chat-previews-container {
+            display: none; flex-direction: row; gap: 10px; width: 100%; max-width: 700px;
+            align-items: center; justify-content: flex-start; padding: 0 10px; flex-wrap: wrap;
+        }
+        .img-preview-bubble {
+            position: relative; width: 64px; height: 64px; border-radius: 10px;
+            border: 1px solid var(--border); overflow: hidden; background: #000;
+        }
+        .img-preview-bubble img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .img-preview-bubble .remove-img-btn {
+            position: absolute; top: 2px; right: 2px; background: rgba(0, 0, 0, 0.75);
+            color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px;
+            font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
+        }
+        .img-preview-bubble .remove-img-btn:hover { background: var(--error); }
+        
+        .add-more-img-slot {
+            width: 64px; height: 64px; border-radius: 10px; border: 2px dashed var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            color: var(--text-dimmed); cursor: pointer; background: transparent; transition: 0.2s;
+        }
+        .add-more-img-slot:hover { border-color: var(--primary); color: #fff; background: rgba(255,255,255,0.02); }
+
+        /* عرض الصور المصغرة بداخل رسائل المستخدم المرسلة */
+        .msg-attached-gallery {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+        }
+        .msg-gallery-img {
+            max-width: 160px; max-height: 160px; border-radius: 8px;
+            object-fit: cover; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
 
         /* --- واجهة حاسبة السيمن المحفوظة --- */
         .calculator-container { width: 100%; max-width: 500px; padding: 20px; margin: 0 auto; padding-bottom: 100px; }
@@ -281,6 +316,9 @@
         </div>
 
         <div class="input-box-wrapper">
+            <!-- شريط المعاينة العلوي الجديد للصور المختارة قبل الإرسال -->
+            <div id="chat-images-preview-bar" class="chat-previews-container"></div>
+
             <div class="input-container">
                 <!-- زر رفع الصور (المعرض) -->
                 <label for="image-upload" class="upload-btn" title="إرفاق صورة">
@@ -290,12 +328,14 @@
                         <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
                 </label>
+                <!-- تحديث الإدخال لدعم معالجة الصور المتعددة برمجياً -->
                 <input type="file" id="image-upload" accept="image/*" style="display:none;">
 
                 <textarea id="chat-input-field" placeholder="اكتب سؤالك هنا..." rows="1" oninput="adjustTextareaHeight(this)"></textarea>
                 
-                <button class="send-btn" onclick="sendChatMessage()" title="إرسال">
-                    <svg viewBox="0 0 24 24">
+                <!-- زر الإرسال التفاعلي القابل للتحول إلى وضع الإيقاف (Pause) -->
+                <button id="chat-send-action-btn" class="send-btn" onclick="sendChatMessage()" title="إرسال">
+                    <svg id="chat-btn-icon" viewBox="0 0 24 24">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                     </svg>
                 </button>
@@ -417,6 +457,11 @@
 
         // مصفوفة الاحتفاظ بسياق المحادثة الممتد لنموذج جيرمني
         let chatContext = [];
+        
+        // مصفوفة مؤقتة للاحتفاظ بالصور الحالية المرفوعة (بحد أقصى 3 صور)
+        let activeUploadedImages = [];
+        // متغير التحكم في إيقاف جلب البيانات من السيرفر (AbortController)
+        let chatAbortController = null;
 
         // إدارة واجهات العرض (Views) والقائمة الجانبية
         function toggleDrawer() {
@@ -474,9 +519,13 @@
             }
         });
 
-        // بدء شات جديد بالكامل (تفريغ السياق والمحادثات وإعادة رسم آتون)
+        // بدء شات جديد بالكامل (تفريغ السياق والمحادثات وإعادة رسم آتون وإلغاء الصور المرفوعة)
         function openNewChat() {
+            if (chatAbortController) chatAbortController.abort();
             chatContext = [];
+            activeUploadedImages = [];
+            renderImagePreviews();
+            
             const container = document.getElementById('chat-messages-container');
             container.innerHTML = `
                 <div class="welcome-wrapper" id="welcome-screen">
@@ -500,10 +549,100 @@
                         <span class="dimmed">أهلاً</span> 
                         <span class="bright">يا دكتور،</span>
                     </h1>
-                    <p class="welcome-subtext">على ماذا يجب أن نركز؟</p>
+                    <p class="welcome-subtext">على ماذا يجب أن نركز?</p>
                 </div>
             `;
             switchView('chat');
+        }
+
+        // دوال معالجة ورفع ومعاينة الصور المتعددة بالشات بوت 
+        document.getElementById('image-upload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+
+            const remainingSlots = 3 - activeUploadedImages.length;
+            if (remainingSlots <= 0) return;
+
+            const file = files[0]; // معالجة ملف واحد في كل مرة للمزامنة الدقيقة مع الواجهة المحفورة
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                // تقسيم الداتا لاستخراج ترميز البايس 64 الخام ونوع الملف
+                const base64Content = evt.target.result.split(',')[1];
+                const mimeType = file.type;
+
+                activeUploadedImages.push({
+                    mimeType: mimeType,
+                    data: base64Content,
+                    previewUrl: evt.target.result
+                });
+
+                renderImagePreviews();
+            };
+            reader.readAsDataURL(file);
+            this.value = ''; // تصفير حقل الإدخال لتمكين اختيار نفس الصورة مجدداً عند رغبة المستخدم
+        });
+
+        function renderImagePreviews() {
+            const previewBar = document.getElementById('chat-images-preview-bar');
+            previewBar.innerHTML = '';
+
+            if (activeUploadedImages.length === 0) {
+                previewBar.style.display = 'none';
+                return;
+            }
+
+            previewBar.style.display = 'flex';
+
+            // رسم الصور المرفوعة حالياً
+            activeUploadedImages.forEach((imgObj, idx) => {
+                previewBar.innerHTML += `
+                    <div class="img-preview-bubble">
+                        <img src="${imgObj.previewUrl}" alt="Preview">
+                        <button class="remove-img-btn" onclick="removeImageFromBuffer(${idx})" title="حذف الصورة">✕</button>
+                    </div>
+                `;
+            });
+
+            // إظهار المربع الشفاف الحامل لعلامة (+) إذا كان العدد أقل من 3 صور
+            if (activeUploadedImages.length < 3) {
+                previewBar.innerHTML += `
+                    <button class="add-more-img-slot" onclick="document.getElementById('image-upload').click()" title="إضافة صورة أخرى">+</button>
+                `;
+            }
+        }
+
+        function removeImageFromBuffer(idx) {
+            activeUploadedImages.splice(idx, 1);
+            renderImagePreviews();
+        }
+
+        // إيقاف وتعطيل التفكير بشكل فوري (Pause Action Trigger)
+        function togglePauseRequest() {
+            if (chatAbortController) {
+                chatAbortController.abort();
+                chatAbortController = null;
+            }
+        }
+
+        // تحويل شكل وزر الإرسال إلى زر الـ Pause بشكل فوري انسيابي
+        function setActionBtnToPauseState() {
+            const actionBtn = document.getElementById('chat-send-action-btn');
+            actionBtn.setAttribute('onclick', 'togglePauseRequest()');
+            actionBtn.setAttribute('title', 'إيقاف التفكير مؤقتاً');
+            actionBtn.style.background = 'var(--error)';
+            actionBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" style="transform: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            `;
+        }
+
+        function setActionBtnToSendState() {
+            const actionBtn = document.getElementById('chat-send-action-btn');
+            actionBtn.setAttribute('onclick', 'sendChatMessage()');
+            actionBtn.setAttribute('title', 'إرسال');
+            actionBtn.style.background = 'var(--primary-dark)';
+            actionBtn.innerHTML = `
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            `;
         }
 
         // دوال أزرار تعديل وإعادة إرسال الرسالة
@@ -522,11 +661,13 @@
             sendChatMessage(text);
         };
 
-        // إرسال الرسالة إلى الـ Chatbot المطور
+        // إرسال الرسالة إلى الـ Chatbot المطور مع الصور المرفوعة
         async function sendChatMessage(overrideQuestion = null) {
             const inputElement = document.getElementById('chat-input-field');
             const question = overrideQuestion || inputElement.value.trim();
-            if (!question) return;
+            
+            // تحقق من وجود نص أو صور مرفوعة للمنع
+            if (!question && activeUploadedImages.length === 0) return;
 
             // إخفاء شاشة الترحيب إن كانت موجودة
             const welcomeScreen = document.getElementById('welcome-screen');
@@ -538,10 +679,20 @@
             const msgsContainer = document.getElementById('chat-messages-container');
             const safeQuestion = question.replace(/"/g, '&quot;'); // حفظ النص للاستخدام لاحقاً في التعديل
 
-            // 1. إضافة رسالة المستخدم مع أزرار التحكم
+            // تجهيز عناصر الجاليري المصغر لعرض الصور داخل فقاعة شات المستخدم
+            let imageGalleryHtml = '';
+            if (activeUploadedImages.length > 0) {
+                imageGalleryHtml = '<div class="msg-attached-gallery">';
+                activeUploadedImages.forEach(img => {
+                    imageGalleryHtml += `<img src="${img.previewUrl}" class="msg-gallery-img"/>`;
+                });
+                imageGalleryHtml += '</div>';
+            }
+
+            // 1. إضافة رسالة المستخدم مع أزرار التحكم والجاليري المصغر للصور المرسلة فعلياً
             msgsContainer.innerHTML += `
                 <div class="message-row user-row">
-                    <div class="msg-user" data-raw="${safeQuestion}">${question.replace(/\n/g, '<br>')}</div>
+                    <div class="msg-user" data-raw="${safeQuestion}">${question.replace(/\n/g, '<br>')} ${imageGalleryHtml}</div>
                     <div class="msg-actions">
                         <button onclick="editMessage(this)" title="تعديل الرسالة">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -564,7 +715,7 @@
             botMessageElement.innerHTML = `
                 <div class="thinking-wrapper" id="think-box">
                     <div class="small-spinner"></div>
-                    <span id="think-text">جاري البحث...</span>
+                    <span id="think-text">جاري البحث وتحليل البيانات...</span>
                 </div>
             `;
             botRowElement.appendChild(botMessageElement);
@@ -574,23 +725,43 @@
             // الانتقال للخطوة الثانية من التفكير بعد ثانيتين
             const thinkingTimeout = setTimeout(() => {
                 const textEl = document.getElementById('think-text');
-                if(textEl) textEl.innerText = "جاري كتابة الرد...";
+                if(textEl) textEl.innerText = "جاري صياغة وكتابة الرد الطبي دكتور...";
             }, 2000);
 
+            // بناء هيكل الأجزاء (parts) للاستفسار الحالي ليدعم النص مع مصفوفة الصور
+            let currentMessageParts = [{ text: question }];
+            activeUploadedImages.forEach(img => {
+                currentMessageParts.push({
+                    inlineData: {
+                        mimeType: img.mimeType,
+                        data: img.data
+                    }
+                });
+            });
+
             // دفع الاستفسار الحالي إلى مصفوفة السياق المتتابع للنموذج
-            chatContext.push({ role: "user", parts: [{ text: question }] });
+            chatContext.push({ role: "user", parts: currentMessageParts });
+
+            // تفريغ مصفوفة الصور المجهزة وتصفير شريط المعاينة فوراً استعداداً للمستقبل
+            activeUploadedImages = [];
+            renderImagePreviews();
+
+            // تفعيل زر الـ Pause وتعطيل الإرسال التقليدي
+            setActionBtnToPauseState();
+            chatAbortController = new AbortController();
 
             try {
                 const response = await fetch("https://sharelook-chatbot.amrmahe321.workers.dev", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ history: chatContext })
+                    body: JSON.stringify({ history: chatContext }),
+                    signal: chatAbortController.signal
                 });
                 
                 const data = await response.json();
                 clearTimeout(thinkingTimeout);
                 
-                // حفظ رد البوت في مصفوفة السياق لتعزيز ترابط الحوار مستقبلاً
+                // حفظ رد البوت في مصفوفة السياق لتعزيز ترابط وموثوقية الحوار مستقبلاً بالصور والنصوص
                 chatContext.push({ role: "model", parts: [{ text: data.answer }] });
                 
                 // عرض الرد النهائي حراً منسقاً بالماركداون داخل مساحة الشاشة بالكامل
@@ -598,14 +769,22 @@
                 
             } catch (e) {
                 clearTimeout(thinkingTimeout);
-                chatContext.pop(); // التراجع للحفاظ على تماسك مصفوفة السياق
-                botMessageElement.innerHTML = `<span style="color:var(--error);">❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.</span>`;
+                if (e.name === 'AbortError') {
+                    // في حالة قيام الدكتور بضغط زر الـ Pause لإلغاء وتوقيف توليد النص
+                    botMessageElement.innerHTML = `<span style="color:var(--text-dimmed); font-style: italic;">🛑 تم إيقاف عملية إحضار وتوليد الإجابة بواسطة المستخدم.</span>`;
+                } else {
+                    chatContext.pop(); // التراجع للحفاظ على تماسك مصفوفة السياق في حالة حدوث أخطاء شبكة
+                    botMessageElement.innerHTML = `<span style="color:var(--error);">❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.</span>`;
+                }
+            } finally {
+                chatAbortController = null;
+                setActionBtnToSendState(); // إعادة إرجاع الزر لوضع الإرسال الطبيعي دائماً
+                msgsContainer.scrollTop = msgsContainer.scrollHeight;
             }
-            msgsContainer.scrollTop = msgsContainer.scrollHeight;
         }
 
 
-        // --- جميع الدوال البرمجية الأصلية لحاسبة السيمن دون تعديل منطقي ---
+        // --- جميع الدوال البرمجية الأصلية لحاسبة السيمن دون أي تعديل منطقي ---
         function initCalc() {
             state.sampleV = parseFloat(document.getElementById('sample_vol').value) || 0;
             state.diluentV = parseFloat(document.getElementById('diluent_vol').value) || 0;
