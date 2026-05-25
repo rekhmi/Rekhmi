@@ -17,19 +17,18 @@
             --bg: #0b0e11; 
             --card: #15191c; 
             --primary: #1d9bf0; 
-            --primary-dark: #0d6efd; /* درجة داكنة مميزة لزر الإرسال */
+            --primary-dark: #0d6efd;
             --text: #fff; 
             --text-dimmed: #71767b;
             --border: #2f3336; 
             --error: #f4212e; 
             --success: #4BB543; 
-            --user-msg-bg: #2f3336; /* لون رمادي غامق مميز لفقاعة المستخدم */
+            --user-msg-bg: #2f3336;
         }
         
         * { box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* الهيدر العلوي الموحد */
         .app-header { 
             position: fixed; top: 0; left: 0; right: 0; height: 60px; 
             background: var(--bg); border-bottom: 1px solid var(--border); 
@@ -39,7 +38,21 @@
         .header-btn { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; transition: 0.2s; }
         .header-btn:hover { background: rgba(255,255,255,0.08); }
 
-        /* القائمة الجانبية (Drawer) */
+        /* زر اختيار اللغة */
+        .lang-toggle-btn {
+            background: rgba(29,155,240,0.12);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .lang-toggle-btn:hover { background: rgba(29,155,240,0.25); }
+
         .sidebar-drawer {
             position: fixed; top: 0; bottom: 0; right: -280px; width: 280px;
             background: var(--card); border-left: 1px solid var(--border);
@@ -61,15 +74,12 @@
         .menu-item.disabled { opacity: 0.5; cursor: not-allowed; }
         .menu-item svg { flex-shrink: 0; }
 
-        /* حاويات الواجهات الأساسية */
         .view-section { display: none; padding-top: 60px; min-height: 100vh; }
         .view-section.active-view { display: flex; flex-direction: column; }
 
-        /* --- واجهة الشات بوت الرئيسيـة مع الخلفية الفرعونية المحفورة --- */
         #chat-view { height: 100vh; display: none; position: relative; }
         #chat-view.active-view { display: flex; }
         
-        /* نقش هيروغليفي محفور في الخلفية */
         #chat-view::before {
             content: "";
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -80,7 +90,6 @@
 
         .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; padding-bottom: 150px; scroll-behavior: smooth; position: relative; z-index: 1; }
         
-        /* واجهة الترحيب وشعار آتون الفرعوني الطبي */
         .welcome-wrapper { text-align: center; margin: auto 0; padding: 40px 10px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
         
         .aton-logo-wrapper {
@@ -107,7 +116,6 @@
         .welcome-heading .bright { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.4); }
         .welcome-subtext { font-size: 24px; color: var(--text-dimmed); margin: 0; }
 
-        /* فقاعات ورسائل الشات */
         .message-row { display: flex; width: 100%; margin: 4px 0; position: relative; z-index: 1; }
         .message-row.user-row { justify-content: flex-end; flex-direction: column; align-items: flex-end; }
         .message-row.bot-row { justify-content: flex-start; }
@@ -118,7 +126,6 @@
             line-height: 1.6; font-size: 16px; word-wrap: break-word; 
         }
 
-        /* أزرار تعديل وإعادة إرسال الرسالة */
         .msg-actions {
             display: flex; gap: 8px; margin-top: 6px; padding-right: 8px; opacity: 0.6; transition: opacity 0.2s;
         }
@@ -128,7 +135,6 @@
         }
         .msg-actions button:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* رد البوت */
         .msg-bot-free { 
             width: 100%; padding: 10px 0; line-height: 1.7; font-size: 16px; 
             color: #e3e3e3; word-wrap: break-word;
@@ -141,7 +147,6 @@
         .msg-bot-free ul, .msg-bot-free ol { padding-right: 24px; margin: 8px 0; }
         .msg-bot-free strong, .msg-bot-free b { color: #fff; font-weight: bold; }
 
-        /* منطقة إدخال النص */
         .input-box-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, var(--bg) 30%); padding: 10px 20px 25px 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; }
         .input-container { width: 100%; max-width: 700px; background: #1e2226; border: 1px solid var(--border); border-radius: 28px; display: flex; align-items: center; padding: 6px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         
@@ -159,7 +164,6 @@
         .small-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--primary); animation: rotateSpin 0.8s linear infinite; }
         @keyframes rotateSpin { to { transform: rotate(360deg); } }
 
-        /* الاستايلات الجديدة الخاصة بمعاينة وإضافة الصور المتعددة بالشات */
         .chat-previews-container {
             display: none; flex-direction: row; gap: 10px; width: 100%; max-width: 700px;
             align-items: center; justify-content: flex-start; padding: 0 10px; flex-wrap: wrap;
@@ -185,7 +189,6 @@
         }
         .add-more-img-slot:hover { border-color: var(--primary); color: #fff; background: rgba(255,255,255,0.02); }
 
-        /* عرض الصور المصغرة بداخل رسائل المستخدم المرسلة */
         .msg-attached-gallery {
             display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
         }
@@ -194,7 +197,6 @@
             object-fit: cover; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
-        /* --- واجهة حاسبة السيمن المحفوظة --- */
         .calculator-container { width: 100%; max-width: 500px; padding: 20px; margin: 0 auto; padding-bottom: 100px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; }
         h2, h3, h4 { color: var(--primary); text-align: center; margin-top: 0; }
@@ -210,7 +212,6 @@
         .res-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
         .note { font-size: 12px; color: #71767b; margin-top: 20px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
         
-        /* الأيقونات العائمة السفلية داخل واجهة حاسبة السيمن */
         .bottom-tools { position: fixed; bottom: 20px; left: 20px; right: 20px; display: none; justify-content: space-between; align-items: center; pointer-events: none; z-index: 99; }
         .bottom-tools-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: auto; }
         .tool-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s; }
@@ -219,11 +220,9 @@
         .tool-label { font-size: 12px; color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
         .tool-btn:active { transform: scale(0.95); }
 
-        /* --- واجهة التعريف بـ التطبيق (About) --- */
         .about-container { width: 100%; max-width: 600px; padding: 20px; margin: 40px auto; text-align: center; line-height: 1.8; }
         .about-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
         
-        /* تنسيق الـ PDF المطبوع */
         #pdf-report { padding: 40px; color: #000; background: #fff; font-family: 'Arial', sans-serif; display: none; }
         .pdf-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
     </style>
@@ -239,12 +238,15 @@
             </svg>
         </button>
         <div style="font-weight: bold; font-size: 18px; letter-spacing: 0.5px; color: var(--primary);">Rekhmi AI</div>
-        <button class="header-btn" onclick="toggleDrawer()" title="القائمة">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="4" y1="8" x2="20" y2="8"></line>
-                <line x1="4" y1="16" x2="20" y2="16"></line>
-            </svg>
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="lang-toggle-btn" id="lang-toggle-btn" onclick="toggleLanguage()">EN</button>
+            <button class="header-btn" onclick="toggleDrawer()" title="القائمة">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="8" x2="20" y2="8"></line>
+                    <line x1="4" y1="16" x2="20" y2="16"></line>
+                </svg>
+            </button>
+        </div>
     </header>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
@@ -258,15 +260,15 @@
                 <path d="M7 11 Q 12 7 17 11 Q 12 15 7 11" fill="currentColor"/>
                 <circle cx="12" cy="11" r="1.5" fill="var(--bg)"/>
             </svg>
-            Rekhmi AI Assistant
+            <span class="i18n" data-ar="Rekhmi AI Assistant" data-en="Rekhmi AI Assistant">Rekhmi AI Assistant</span>
         </div>
         <div class="menu-item" id="menu-calc" onclick="switchView('calc')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 6 A4 4 0 0 0 6 14 L6 19 L14 19 L14 14 A4 4 0 0 0 14 6 Z M18 19 L22 19 M12 2 L12 6 M9 2 L15 2" stroke-linecap="round"/>
             </svg>
-            Semen analysis calculator
+            <span class="i18n" data-ar="Semen analysis calculator" data-en="Semen analysis calculator">Semen analysis calculator</span>
         </div>
-        <div class="menu-item disabled" onclick="alert('قريباً.. قارئ ذكي للروشتات المعقدة ✨')">
+        <div class="menu-item disabled" onclick="alert(currentLang==='ar' ? 'قريباً.. قارئ ذكي للروشتات المعقدة ✨' : 'Coming soon.. Smart prescription reader ✨')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line>
             </svg>
@@ -276,7 +278,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            About Rekhmi
+            <span class="i18n" data-ar="About Rekhmi" data-en="About Rekhmi">About Rekhmi</span>
         </div>
     </nav>
 
@@ -301,10 +303,10 @@
                     </svg>
                 </div>
                 <h1 class="welcome-heading">
-                    <span class="dimmed">أهلاً</span> 
-                    <span class="bright">يا دكتور،</span>
+                    <span class="dimmed" id="welcome-greeting"></span>
+                    <span class="bright" id="welcome-name"></span>
                 </h1>
-                <p class="welcome-subtext">على ماذا يجب أن نركز؟</p>
+                <p class="welcome-subtext" id="welcome-subtext"></p>
             </div>
         </div>
 
@@ -329,7 +331,7 @@
                     </svg>
                 </button>
             </div>
-            <p class="disclaimer-text">Rekhmi هو نموذج ذكاء اصطناعي وقد يحدث أخطاء</p>
+            <p class="disclaimer-text" id="disclaimer-text">Rekhmi هو نموذج ذكاء اصطناعي وقد يحدث أخطاء</p>
         </div>
     </main>
 
@@ -338,40 +340,40 @@
         <div class="calculator-container">
             
             <div id="calc-menu" class="card" style="display: block; text-align: center;">
-                <h2>Semen Analysis Calculator</h2>
-                <p style="color: var(--text-dimmed); margin-bottom: 25px;">يرجى اختيار نوع الاختبار المطلوب بدئه دكتور:</p>
+                <h2 class="i18n" data-ar="Semen Analysis Calculator" data-en="Semen Analysis Calculator">Semen Analysis Calculator</h2>
+                <p class="i18n" data-ar="يرجى اختيار نوع الاختبار المطلوب بدئه دكتور:" data-en="Please select the test type to begin, Doctor:" style="color: var(--text-dimmed); margin-bottom: 25px;">يرجى اختيار نوع الاختبار المطلوب بدئه دكتور:</p>
                 <div class="btn-group">
                     <button class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 18px; font-size: 17px; border-radius: 12px;" onclick="selectCalcRoute('motility')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M2 12C5 12 6 9 8 9C10 9 11 15 13 15C15 15 16 10 18 10C20 10 21 13 23 13" stroke-linecap="round"/>
                             <circle cx="2" cy="12" r="2.5" fill="currentColor"/>
                         </svg>
-                        <span>Motility (حساب الحركة)</span>
+                        <span class="i18n" data-ar="Motility (حساب الحركة)" data-en="Motility">Motility (حساب الحركة)</span>
                     </button>
                     <button class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 18px; font-size: 17px; border-radius: 12px; background: #23272a;" onclick="selectCalcRoute('count_morph')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 6 A4 4 0 0 0 6 14 L6 19 L14 19 L14 14 A4 4 0 0 0 14 6 Z" stroke-linecap="round"/>
                         </svg>
-                        <span>Count & Morphology (العد والتشوهات)</span>
+                        <span class="i18n" data-ar="Count & Morphology (العد والتشوهات)" data-en="Count & Morphology">Count & Morphology (العد والتشوهات)</span>
                     </button>
                 </div>
             </div>
 
             <div id="motility-step" class="card" style="display:none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 id="motility_field_title" style="margin: 0; text-align: right;">الفيلد 1</h3>
+                    <h3 id="motility_field_title" style="margin: 0; text-align: right;"></h3>
                     <div style="display: flex; background: #000; padding: 2px; border-radius: 20px; border: 1px solid var(--border);">
                         <button id="toggle_abs_btn" style="padding: 5px 12px; border-radius: 15px; font-size: 12px; background: transparent; color: var(--text-dimmed); font-weight: bold;" onclick="setMotilityMode('absolute')">Absolute</button>
                         <button id="toggle_pct_btn" style="padding: 5px 12px; border-radius: 15px; font-size: 12px; background: var(--primary); color: #fff; font-weight: bold;" onclick="setMotilityMode('percent')">Percent</button>
                     </div>
                 </div>
 
-                <div id="motility_hint_box" style="background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; color: #fff; font-size: 14px;">
+                <div id="motility_hint_box" style="background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; color: #fff; font-size: 14px;" class="i18n" data-ar="اكتب نسبة كل نوع من الحركة" data-en="Enter the percentage of each motility type">
                     اكتب نسبة كل نوع من الحركة
                 </div>
 
-                <label>Total sperm count in field:</label>
-                <input type="number" id="mot_total_sperm" placeholder="العدد الكلي للحيوانات المنوية في الفيلد الحالي">
+                <label class="i18n" data-ar="إجمالي الحيوانات المنوية في الفيلد:" data-en="Total sperm count in field:">إجمالي الحيوانات المنوية في الفيلد:</label>
+                <input type="number" id="mot_total_sperm" placeholder="">
 
                 <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
                     <div>
@@ -406,107 +408,105 @@
 
                 <div style="display: flex; align-items: center; gap: 10px; margin: 20px 0 15px 0; background: #000; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <input type="checkbox" id="mot_aggregating" style="width: 20px; height: 20px; margin: 0; cursor: pointer;">
-                    <label for="mot_aggregating" style="cursor: pointer; font-size: 14px; font-weight: bold;">aggregating (تجمع أو تكتل)</label>
+                    <label for="mot_aggregating" style="cursor: pointer; font-size: 14px; font-weight: bold;" class="i18n" data-ar="aggregating (تجمع أو تكتل)" data-en="Aggregating (clumping)">aggregating (تجمع أو تكتل)</label>
                 </div>
 
-                <div id="motility_progress_txt" style="font-size: 13px; color: var(--primary); margin-bottom: 15px; text-align: center; font-weight: 500;">
-                    المجموع الكلي الحالي: 0 حيوان منوي (فيلدات: 0)
-                </div>
+                <div id="motility_progress_txt" style="font-size: 13px; color: var(--primary); margin-bottom: 15px; text-align: center; font-weight: 500;"></div>
 
                 <div class="btn-group">
                     <div class="row-btns">
-                        <button id="mot_back_btn" class="btn-secondary" onclick="prevMotilityField()">العودة</button>
-                        <button class="btn-primary" style="flex:1;" onclick="processMotilityField()">التالي</button>
+                        <button id="mot_back_btn" class="btn-secondary" onclick="prevMotilityField()" class="i18n" data-ar="العودة" data-en="Back"></button>
+                        <button class="btn-primary i18n" data-ar="التالي" data-en="Next" style="flex:1;" onclick="processMotilityField()"></button>
                     </div>
                 </div>
             </div>
 
             <div id="motility-complete-dialog" class="card" style="display:none; text-align: center;">
-                <h3 style="color: var(--success); font-size: 22px;">🎉 انتهى عد الmotility</h3>
-                <p style="color: var(--text-dimmed); margin-bottom: 25px; font-size: 15px;">تم الوصول للعدد الكافي والمطابق للمعايير الطبية ($\ge 200$ حيوان منوي و $\ge 5$ فيلدات).</p>
+                <h3 id="motility-complete-title" style="color: var(--success); font-size: 22px;"></h3>
+                <p id="motility-complete-desc" style="color: var(--text-dimmed); margin-bottom: 25px; font-size: 15px;"></p>
                 <div class="btn-group">
-                    <button class="btn-success" style="padding: 14px;" onclick="calculateMotilityOnly()">احسب النتيجة</button>
-                    <button class="btn-primary" style="padding: 14px;" onclick="transitionToCountMorph()">انتقل لـ count & morphology</button>
+                    <button class="btn-success i18n" data-ar="احسب النتيجة" data-en="Calculate Result" style="padding: 14px;" onclick="calculateMotilityOnly()"></button>
+                    <button class="btn-primary i18n" data-ar="انتقل لـ Count & Morphology" data-en="Continue to Count & Morphology" style="padding: 14px;" onclick="transitionToCountMorph()"></button>
                 </div>
             </div>
             
             <div id="step1" class="card" style="display:none;">
-                <h3>إعدادات عينة العد والتشوهات</h3>
-                <input type="number" id="sample_vol" placeholder="حجم عينة التخفيف (µl)">
-                <input type="number" id="diluent_vol" placeholder="حجم المخفف (µl)">
-                <input type="number" id="total_semen_vol" placeholder="الحجم الكلي للعينة (ml)">
-                <button class="btn-primary" style="width: 100%;" onclick="initCalc()">ابدأ العد</button>
+                <h3 class="i18n" data-ar="إعدادات عينة العد والتشوهات" data-en="Count & Morphology Sample Settings">إعدادات عينة العد والتشوهات</h3>
+                <input type="number" id="sample_vol" placeholder="">
+                <input type="number" id="diluent_vol" placeholder="">
+                <input type="number" id="total_semen_vol" placeholder="">
+                <button class="btn-primary i18n" data-ar="ابدأ العد" data-en="Start Counting" style="width: 100%;" onclick="initCalc()"></button>
             </div>
 
             <div id="step2" class="card" style="display:none;">
-                <h3 id="square_title">المربع 1 / 32</h3>
-                <div id="overload_msg" class="warning">⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف؟</div>
+                <h3 id="square_title"></h3>
+                <div id="overload_msg" class="warning"></div>
                 
-                <label>إجمالي الحيوانات المنوية:</label>
+                <label class="i18n" data-ar="إجمالي الحيوانات المنوية:" data-en="Total sperm count:">إجمالي الحيوانات المنوية:</label>
                 <input type="number" id="current_total">
                 
                 <div id="morph_section">
-                    <h4 style="margin: 10px 0 5px 0;">Morphology:</h4>
-                    <input type="number" id="abn_total" placeholder="إجمالي المشوهين">
-                    <input type="number" id="h_def" placeholder="عيوب الرأس">
-                    <input type="number" id="n_def" placeholder="عيوب الرقبة">
-                    <input type="number" id="t_def" placeholder="عيوب الذيل">
+                    <h4 class="i18n" data-ar="Morphology:" data-en="Morphology:" style="margin: 10px 0 5px 0;">Morphology:</h4>
+                    <input type="number" id="abn_total" placeholder="">
+                    <input type="number" id="h_def" placeholder="">
+                    <input type="number" id="n_def" placeholder="">
+                    <input type="number" id="t_def" placeholder="">
                 </div>
 
                 <div class="btn-group">
                     <div class="row-btns">
-                        <button id="back_btn" class="btn-secondary" onclick="prevSquare()">العودة</button>
-                        <button class="btn-primary" style="flex:1;" onclick="processSquare()">التالي</button>
+                        <button id="back_btn" class="btn-secondary i18n" data-ar="العودة" data-en="Back" onclick="prevSquare()"></button>
+                        <button class="btn-primary i18n" data-ar="التالي" data-en="Next" style="flex:1;" onclick="processSquare()"></button>
                     </div>
-                    <button class="btn-success" onclick="showFinal()">اعرض النتيجة الآن</button>
+                    <button class="btn-success i18n" data-ar="اعرض النتيجة الآن" data-en="Show Result Now" onclick="showFinal()"></button>
                 </div>
             </div>
 
             <div id="results" class="card" style="display:none;">
                 <div id="printable-area" style="padding: 10px;">
-                    <h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 8px;">النتائج التحليلية النهائيـة (Semen Analysis Report)</h3>
+                    <h3 class="i18n" data-ar="النتائج التحليلية النهائيـة (Semen Analysis Report)" data-en="Final Analysis Results (Semen Analysis Report)" style="border-bottom: 2px solid var(--primary); padding-bottom: 8px;"></h3>
                     
                     <div id="section_motility_results" style="display:none; margin-top: 15px;">
-                        <h4 style="text-align: right; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 10px;">أولاً: تقييم حركة الحيوانات المنوية (Motility)</h4>
+                        <h4 id="motility-results-title" style="text-align: right; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 10px;"></h4>
                         <div class="results-grid">
-                            <div class="res-item" style="grid-column: span 2; font-weight: bold;">إجمالي الحركة (Total Motility): <span id="res_mot_total"></span></div>
-                            <div class="res-item" style="grid-column: span 2; font-weight: bold; color: var(--success);">الحركة التقدمية (Progressive Motility A+B): <span id="res_mot_prog"></span></div>
-                            <div class="res-item">تقدمية سريعة (Grade A): <span id="res_mot_a"></span></div>
-                            <div class="res-item">تقدمية بطيئة (Grade B): <span id="res_mot_b"></span></div>
-                            <div class="res-item">حركة غير تقدمية (Grade C): <span id="res_mot_c"></span></div>
-                            <div class="res-item" style="color: var(--error);">عدم الحركة (Immotile - Grade D): <span id="res_mot_immotile_val"></span></div>
+                            <div class="res-item" style="grid-column: span 2; font-weight: bold;"><span class="i18n" data-ar="إجمالي الحركة (Total Motility):" data-en="Total Motility:"></span> <span id="res_mot_total"></span></div>
+                            <div class="res-item" style="grid-column: span 2; font-weight: bold; color: var(--success);"><span class="i18n" data-ar="الحركة التقدمية (Progressive Motility A+B):" data-en="Progressive Motility (A+B):"></span> <span id="res_mot_prog"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="تقدمية سريعة (Grade A):" data-en="Rapid progressive (Grade A):"></span> <span id="res_mot_a"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="تقدمية بطيئة (Grade B):" data-en="Slow progressive (Grade B):"></span> <span id="res_mot_b"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="حركة غير تقدمية (Grade C):" data-en="Non progressive (Grade C):"></span> <span id="res_mot_c"></span></div>
+                            <div class="res-item" style="color: var(--error);"><span class="i18n" data-ar="عدم الحركة (Immotile - Grade D):" data-en="Immotile (Grade D):"></span> <span id="res_mot_immotile_val"></span></div>
                         </div>
-                        <div class="note" style="margin-top: 5px; border: none; padding: 0;">بناءً على فحص <span id="res_mot_fields"></span> حقول مجهرية (إجمالي عَد: <span id="res_mot_total_counted"></span> حيوان منوي)</div>
+                        <div class="note" style="margin-top: 5px; border: none; padding: 0;" id="motility-fields-note"></div>
                     </div>
 
                     <div id="section_count_morph_results" style="display:none; margin-top: 20px;">
-                        <h4 style="text-align: right; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 10px;">ثانياً: تركيز العدد والتشوهات (Count & Morphology)</h4>
+                        <h4 id="count-morph-results-title" style="text-align: right; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 10px;"></h4>
                         <div id="res_conc" style="font-size: 1.1em; font-weight: bold; margin-bottom: 5px;"></div>
                         <div id="res_total_count" style="font-size: 1.1em; color: var(--primary); margin-bottom: 15px;"></div>
                         
                         <div class="results-grid">
-                            <div class="res-item">الطبيعي: <span id="res_morph" style="color: var(--success);"></span></div>
-                            <div class="res-item">التشوهات: <span id="res_abn_pct" style="color: var(--error);"></span></div>
-                            <div class="res-item">عيوب رأس: <span id="res_h"></span></div>
-                            <div class="res-item">عيوب رقبة: <span id="res_n"></span></div>
-                            <div class="res-item">عيوب ذيل: <span id="res_t"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="الطبيعي:" data-en="Normal:"></span> <span id="res_morph" style="color: var(--success);"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="التشوهات:" data-en="Abnormal:"></span> <span id="res_abn_pct" style="color: var(--error);"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="عيوب رأس:" data-en="Head defects:"></span> <span id="res_h"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="عيوب رقبة:" data-en="Neck defects:"></span> <span id="res_n"></span></div>
+                            <div class="res-item"><span class="i18n" data-ar="عيوب ذيل:" data-en="Tail defects:"></span> <span id="res_t"></span></div>
                         </div>
-                        <div class="note" style="margin-top: 5px; border: none; padding: 0;">بناءً على عد <span id="res_sq_count"></span> مربعاً مخففاً</div>
+                        <div class="note" style="margin-top: 5px; border: none; padding: 0;" id="squares-note"></div>
                     </div>
 
                     <div id="res_comment_box" style="display:none; background: rgba(244, 33, 46, 0.1); border: 1px solid var(--error); padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 15px; color: #fff; text-align: center; font-size: 14px;">
                         Comment: Anti-sperm antibody test is recommended.
                     </div>
                 </div>
-                <button class="btn-primary" style="margin-top:15px; width: 100%;" onclick="downloadPDF()">تحميل النتيجة PDF</button>
-                <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="resetCalculatorOnly()">تحليل جديد</button>
+                <button class="btn-primary i18n" data-ar="تحميل النتيجة PDF" data-en="Download PDF Report" style="margin-top:15px; width: 100%;" onclick="downloadPDF()"></button>
+                <button class="btn-secondary i18n" data-ar="تحليل جديد" data-en="New Analysis" style="margin-top:10px; width: 100%;" onclick="resetCalculatorOnly()"></button>
             </div>
         </div>
 
         <div class="bottom-tools" id="calc-bottom-bar">
             <div class="bottom-tools-wrapper">
-                <div class="tool-btn ocr-btn" onclick="alert('قريباً.. قارئ للروشتات المعقدة بالذكاء الاصطناعي ✨')">📄🔍</div>
-                <span class="tool-label">قارئ الروشتات</span>
+                <div class="tool-btn ocr-btn" onclick="alert(currentLang==='ar' ? 'قريباً.. قارئ للروشتات المعقدة بالذكاء الاصطناعي ✨' : 'Coming soon.. AI prescription reader ✨')">📄🔍</div>
+                <span class="tool-label i18n" data-ar="قارئ الروشتات" data-en="Prescription Reader"></span>
             </div>
             <div class="bottom-tools-wrapper">
                 <div class="tool-btn bot-logo-btn" onclick="switchView('chat')">
@@ -516,7 +516,7 @@
                         <circle cx="12" cy="11" r="1.5" fill="#ffffff"/>
                     </svg>
                 </div>
-                <span class="tool-label" style="color:var(--primary);">إسأل Rekhmi</span>
+                <span class="tool-label i18n" data-ar="إسأل Rekhmi" data-en="Ask Rekhmi" style="color:var(--primary);"></span>
             </div>
         </div>
     </main>
@@ -540,20 +540,175 @@
                         <path d="M 15 50 Q 18 50 18 47 Q 18 50 21 50 Q 18 50 18 53 Q 18 50 15 50" fill="#f2c94c"/>
                     </svg>
                 </div>
-                <h3>حول تطبيق Rekhmi</h3>
-                <p><strong>Rekhmi</strong> هو تطبيق ويب ومساعد ذكي مدعوم بالذكاء الاصطناعي، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة.</p>
-                <button class="btn-primary" style="padding: 10px 24px; margin-top: 15px;" onclick="switchView('chat')">ابدأ استخدام المساعد الذكي الآن</button>
+                <h3 class="i18n" data-ar="حول تطبيق Rekhmi" data-en="About Rekhmi">حول تطبيق Rekhmi</h3>
+                <p class="i18n" data-ar="<strong>Rekhmi</strong> هو تطبيق ويب ومساعد ذكي مدعوم بالذكاء الاصطناعي، تم تصميمه خصيصاً لمساعدة كيميائي التحاليل الطبية في مهامهم اليومية وبناء حسابات مجهرية دقيقة وموثوقة." data-en="<strong>Rekhmi</strong> is an AI-powered web app and smart assistant, designed specifically to help medical laboratory chemists with their daily tasks and build accurate, reliable microscopic calculations."></p>
+                <button class="btn-primary i18n" data-ar="ابدأ استخدام المساعد الذكي الآن" data-en="Start Using the AI Assistant" style="padding: 10px 24px; margin-top: 15px;" onclick="switchView('chat')"></button>
             </div>
         </div>
     </main>
 
 
     <script>
+        // --- نظام اللغة ---
+        let currentLang = 'ar';
+
+        const subtextsAr = [
+            'على ماذا يجب أن نركز؟',
+            'كيف يمكنني مساعدتك اليوم؟',
+            'ما الذي تحتاج إليه؟',
+            'أنا هنا للمساعدة.'
+        ];
+        const subtextsEn = [
+            'What shall we focus on?',
+            'How can I help you today?',
+            'What do you need?',
+            'I\'m here to help.'
+        ];
+
+        function getRandomSubtext(lang) {
+            const arr = lang === 'ar' ? subtextsAr : subtextsEn;
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const isAr = lang === 'ar';
+
+            document.documentElement.lang = lang;
+            document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+
+            // تحديث زر اللغة
+            document.getElementById('lang-toggle-btn').innerText = isAr ? 'EN' : 'عر';
+
+            // تحديث placeholder حقل الإدخال
+            document.getElementById('chat-input-field').placeholder = isAr ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+
+            // تحديث disclaimer
+            document.getElementById('disclaimer-text').innerText = isAr
+                ? 'Rekhmi هو نموذج ذكاء اصطناعي وقد يحدث أخطاء'
+                : 'Rekhmi is an AI model and may make mistakes';
+
+            // تحديث كل العناصر المحملة بـ i18n
+            document.querySelectorAll('.i18n').forEach(el => {
+                const val = isAr ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+                if (val !== null) el.innerHTML = val;
+            });
+
+            // تحديث شاشة الترحيب إن كانت ظاهرة
+            updateWelcomeScreen(lang);
+
+            // تحديث placeholders الحاسبة
+            updateCalcPlaceholders(lang);
+
+            // تحديث نصوص الـ motility المتغيرة
+            updateMotilityDynamicTexts(lang);
+        }
+
+        function updateWelcomeScreen(lang) {
+            const greetingEl = document.getElementById('welcome-greeting');
+            const nameEl = document.getElementById('welcome-name');
+            const subtextEl = document.getElementById('welcome-subtext');
+            if (!greetingEl) return;
+            if (lang === 'ar') {
+                greetingEl.innerText = 'أهلاً ';
+                nameEl.innerText = 'يا دكتور،';
+            } else {
+                greetingEl.innerText = 'Welcome ';
+                nameEl.innerText = 'Doctor,';
+            }
+            if (subtextEl) subtextEl.innerText = getRandomSubtext(lang);
+        }
+
+        function updateCalcPlaceholders(lang) {
+            const isAr = lang === 'ar';
+            const p = (ar, en) => isAr ? ar : en;
+            const sv = document.getElementById('sample_vol');
+            const dv = document.getElementById('diluent_vol');
+            const tv = document.getElementById('total_semen_vol');
+            const ms = document.getElementById('mot_total_sperm');
+            const ab = document.getElementById('abn_total');
+            const hd = document.getElementById('h_def');
+            const nd = document.getElementById('n_def');
+            const td = document.getElementById('t_def');
+            if (sv) sv.placeholder = p('حجم عينة التخفيف (µl)', 'Sample dilution volume (µl)');
+            if (dv) dv.placeholder = p('حجم المخفف (µl)', 'Diluent volume (µl)');
+            if (tv) tv.placeholder = p('الحجم الكلي للعينة (ml)', 'Total semen volume (ml)');
+            if (ms) ms.placeholder = p('العدد الكلي للحيوانات المنوية في الفيلد الحالي', 'Total sperm count in current field');
+            if (ab) ab.placeholder = p('إجمالي المشوهين', 'Total abnormal');
+            if (hd) hd.placeholder = p('عيوب الرأس', 'Head defects');
+            if (nd) nd.placeholder = p('عيوب الرقبة', 'Neck defects');
+            if (td) td.placeholder = p('عيوب الذيل', 'Tail defects');
+        }
+
+        function updateMotilityDynamicTexts(lang) {
+            const isAr = lang === 'ar';
+            // عنوان الفيلد الحالي
+            const fieldTitle = document.getElementById('motility_field_title');
+            if (fieldTitle && fieldTitle.innerText) {
+                const fieldNum = state.motilityCurrentField || 1;
+                fieldTitle.innerText = isAr ? `الفيلد ${fieldNum}` : `Field ${fieldNum}`;
+            }
+            // نص الزر العودة/التالي
+            const backBtn = document.getElementById('mot_back_btn');
+            if (backBtn) backBtn.innerText = isAr ? 'العودة' : 'Back';
+            // زر التالي في الموتيليتي
+            const nextBtns = document.querySelectorAll('#motility-step .btn-primary');
+            nextBtns.forEach(b => { if (b.getAttribute('onclick') === 'processMotilityField()') b.innerText = isAr ? 'التالي' : 'Next'; });
+            // نص التقدم
+            updateMotilityProgressText();
+            // نص حوار الاكتمال
+            const completeTitle = document.getElementById('motility-complete-title');
+            const completeDesc = document.getElementById('motility-complete-desc');
+            if (completeTitle) completeTitle.innerText = isAr ? '🎉 انتهى عد الMotility' : '🎉 Motility Count Complete';
+            if (completeDesc) completeDesc.innerHTML = isAr
+                ? 'تم الوصول للعدد الكافي والمطابق للمعايير الطبية (&ge;200 حيوان منوي و&ge;5 فيلدات).'
+                : 'Sufficient count reached per medical standards (&ge;200 sperms and &ge;5 fields).';
+            // نصوص النتائج
+            const motResultsTitle = document.getElementById('motility-results-title');
+            if (motResultsTitle) motResultsTitle.innerText = isAr
+                ? 'أولاً: تقييم حركة الحيوانات المنوية (Motility)'
+                : '1st: Sperm Motility Assessment';
+            const countMorphTitle = document.getElementById('count-morph-results-title');
+            if (countMorphTitle) countMorphTitle.innerText = isAr
+                ? 'ثانياً: تركيز العدد والتشوهات (Count & Morphology)'
+                : '2nd: Concentration, Count & Morphology';
+            // نص square_title
+            updateSquareTitle();
+            // نص overload
+            const overloadEl = document.getElementById('overload_msg');
+            if (overloadEl) overloadEl.innerText = isAr
+                ? '⚠️ تنبيه: تزايد في العدد (Overload)! هل تفضل إعادة التخفيف؟'
+                : '⚠️ Warning: High count (Overload)! Do you prefer to re-dilute?';
+        }
+
+        function updateSquareTitle() {
+            const el = document.getElementById('square_title');
+            if (!el) return;
+            const isAr = currentLang === 'ar';
+            el.innerText = isAr ? `المربع ${state.current} / 32` : `Square ${state.current} / 32`;
+        }
+
+        function updateMotilityProgressText() {
+            const el = document.getElementById('motility_progress_txt');
+            if (!el) return;
+            const isAr = currentLang === 'ar';
+            let cumulativeSperm = 0;
+            for (let i = 0; i < state.motilityCurrentField - 1; i++) {
+                if (state.motilityHistory[i]) cumulativeSperm += state.motilityHistory[i].totalSperm;
+            }
+            el.innerText = isAr
+                ? `المجموع الكلي الحالي: ${cumulativeSperm} حيوان منوي (فيلدات تم حفظها: ${state.motilityCurrentField - 1})`
+                : `Current total: ${cumulativeSperm} sperms (fields saved: ${state.motilityCurrentField - 1})`;
+        }
+
+        function toggleLanguage() {
+            applyLanguage(currentLang === 'ar' ? 'en' : 'ar');
+        }
+
         // إعدادات وبيانات حاسبة السيمن المطورة لتغطية مسار الـ Motility والـ Count معاً
         let state = {
             current: 1, sampleV: 0, diluentV: 0, totalSemenV: 0,
             history: [], morphDone: false, overloadIgnored: false,
-            // المتغيرات الجديدة الخاصة بالـ Motility
             route: null, 
             motilityCurrentField: 1,
             motilityHistory: [],
@@ -580,25 +735,21 @@
         }
 
         function switchView(viewName) {
-            // إغلاق القائمة أولاً
             document.getElementById('sidebarDrawer').classList.remove('open');
             document.getElementById('drawerOverlay').classList.remove('show');
 
-            // إخفاء كل الواجهات
             document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
             document.getElementById('calc-bottom-bar').style.display = 'none';
 
-            // تفعيل الواجهة المستهدفة
             if(viewName === 'chat') {
                 document.getElementById('chat-view').classList.add('active-view');
                 document.getElementById('menu-chat').classList.add('active');
             } else if (viewName === 'calc') {
                 document.getElementById('calc-view').classList.add('active-view');
                 document.getElementById('menu-calc').classList.add('active');
-                document.getElementById('calc-bottom-bar').style.display = 'flex'; // إظهار أيقونات الاختصار السفلية بداخل الحاسبة
+                document.getElementById('calc-bottom-bar').style.display = 'flex';
                 
-                // في حال عدم اختيار طريق حتى الآن، نثبت ظهور شاشة الخيارين الرئيسية المضافة حديثاً
                 if (!state.route) {
                     showCalcMenu();
                 }
@@ -608,37 +759,33 @@
             }
         }
 
-        // إعداد تمدد حقل النصوص انسيابياً
         function adjustTextareaHeight(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
 
-        // تفكيك تفرعات ضغط الأزرار من كيبورد الموبايل واللاب توب بدقة
         document.getElementById('chat-input-field').addEventListener('keydown', function(e) {
             const isLaptopDesktop = window.matchMedia("(min-width: 769px)").matches;
             
             if (e.key === 'Enter') {
                 if (isLaptopDesktop) {
                     if (!e.shiftKey) {
-                        e.preventDefault(); // منع نزول سطر افتراضي
-                        sendChatMessage(); // إرسال الاستفسار فوراً
+                        e.preventDefault();
+                        sendChatMessage();
                     }
-                    // لو ضغط Shift + Enter على اللابتوب هينزل سطر عادي تلقائياً
-                } else {
-                    // على الموبايل ضغط Enter ينزل سطر دائماً ولا يرسل
-                    // يترك السلوك الطبيعي لإدخال سطر جديد
                 }
             }
         });
 
-        // بدء شات جديد بالكامل (تفريغ السياق والمحادثات وإعادة رسم آتون وإلغاء الصور المرفوعة)
         function openNewChat() {
             if (chatAbortController) chatAbortController.abort();
             chatContext = [];
             activeUploadedImages = [];
             renderImagePreviews();
             
+            const subtext = getRandomSubtext(currentLang);
+            const isAr = currentLang === 'ar';
+
             const container = document.getElementById('chat-messages-container');
             container.innerHTML = `
                 <div class="welcome-wrapper" id="welcome-screen">
@@ -659,16 +806,15 @@
                         </svg>
                     </div>
                     <h1 class="welcome-heading">
-                        <span class="dimmed">أهلاً</span> 
-                        <span class="bright">يا دكتور،</span>
+                        <span class="dimmed" id="welcome-greeting">${isAr ? 'أهلاً ' : 'Welcome '}</span>
+                        <span class="bright" id="welcome-name">${isAr ? 'يا دكتور،' : 'Doctor,'}</span>
                     </h1>
-                    <p class="welcome-subtext">على ماذا يجب أن نركز؟</p>
+                    <p class="welcome-subtext" id="welcome-subtext">${subtext}</p>
                 </div>
             `;
             switchView('chat');
         }
 
-        // دوال معالجة ورفع ومعاينة الصور المتعددة بالشات بوت 
         document.getElementById('image-upload').addEventListener('change', function(e) {
             const files = e.target.files;
             if (!files || files.length === 0) return;
@@ -676,10 +822,9 @@
             const remainingSlots = 3 - activeUploadedImages.length;
             if (remainingSlots <= 0) return;
 
-            const file = files[0]; // معالجة ملف واحد في كل مرة للمزامنة الدقيقة مع الواجهة المحفورة
+            const file = files[0];
             const reader = new FileReader();
             reader.onload = function(evt) {
-                // تقسيم الداتا لاستخراج ترميز البايس 64 الخام ونوع الملف
                 const base64Content = evt.target.result.split(',')[1];
                 const mimeType = file.type;
 
@@ -692,7 +837,7 @@
                 renderImagePreviews();
             };
             reader.readAsDataURL(file);
-            this.value = ''; // تصفير حقل الإدخال لتمكين اختيار نفس الصورة مجدداً عند رغبة المستخدم
+            this.value = '';
         });
 
         function renderImagePreviews() {
@@ -706,7 +851,6 @@
 
             previewBar.style.display = 'flex';
 
-            // رسم الصور المرفوعة حالياً
             activeUploadedImages.forEach((imgObj, idx) => {
                 previewBar.innerHTML += `
                     <div class="img-preview-bubble">
@@ -716,7 +860,6 @@
                 `;
             });
 
-            // إظهار المربع الشفاف الحامل لعلامة (+) إذا كان العدد أقل من 3 صور
             if (activeUploadedImages.length < 3) {
                 previewBar.innerHTML += `
                     <button class="add-more-img-slot" onclick="document.getElementById('image-upload').click()" title="إضافة صورة أخرى">+</button>
@@ -729,7 +872,6 @@
             renderImagePreviews();
         }
 
-        // إيقاف وتعطيل التفكير بشكل فوري (Pause Action Trigger)
         function togglePauseRequest() {
             if (chatAbortController) {
                 chatAbortController.abort();
@@ -737,7 +879,6 @@
             }
         }
 
-        // تحويل شكل وزر الإرسال إلى زر الـ Pause بشكل فوري انسيابي
         function setActionBtnToPauseState() {
             const actionBtn = document.getElementById('chat-send-action-btn');
             actionBtn.setAttribute('onclick', 'togglePauseRequest()');
@@ -758,7 +899,6 @@
             `;
         }
 
-        // دوال أزرار تعديل وإعادة إرسال الرسالة
         window.editMessage = function(btn) {
             const container = btn.closest('.user-row');
             const text = container.querySelector('.msg-user').getAttribute('data-raw');
@@ -774,25 +914,21 @@
             sendChatMessage(text);
         };
 
-        // إرسال الرسالة إلى الـ Chatbot المطور مع الصور المرفوعة
         async function sendChatMessage(overrideQuestion = null) {
             const inputElement = document.getElementById('chat-input-field');
             const question = overrideQuestion || inputElement.value.trim();
             
-            // تحقق من وجود نص أو صور مرفوعة للمنع
             if (!question && activeUploadedImages.length === 0) return;
 
-            // إخفاء شاشة الترحيب إن كانت موجودة
             const welcomeScreen = document.getElementById('welcome-screen');
             if (welcomeScreen) welcomeScreen.style.display = 'none';
 
             inputElement.value = "";
-            inputElement.style.height = 'auto'; // إعادة تعيين الارتفاع الافتراضي
+            inputElement.style.height = 'auto';
 
             const msgsContainer = document.getElementById('chat-messages-container');
-            const safeQuestion = question.replace(/"/g, '&quot;'); // حفظ النص للاستخدام لاحقاً في التعديل
+            const safeQuestion = question.replace(/"/g, '&quot;');
 
-            // تجهيز عناصر الجاليري المصغر لعرض الصور داخل فقاعة شات المستخدم
             let imageGalleryHtml = '';
             if (activeUploadedImages.length > 0) {
                 imageGalleryHtml = '<div class="msg-attached-gallery">';
@@ -802,7 +938,6 @@
                 imageGalleryHtml += '</div>';
             }
 
-            // 1. إضافة رسالة المستخدم مع أزرار التحكم والجاليري المصغر للصور المرسلة فعلياً
             msgsContainer.innerHTML += `
                 <div class="message-row user-row">
                     <div class="msg-user" data-raw="${safeQuestion}">${question.replace(/\n/g, '<br>')} ${imageGalleryHtml}</div>
@@ -818,30 +953,30 @@
             `;
             msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-            // 2. إنشاء مساحة رد البوت الحرة
             const botRowElement = document.createElement('div');
             botRowElement.className = 'message-row bot-row';
             
             const botMessageElement = document.createElement('div');
             botMessageElement.className = 'msg-bot-free';
             
+            const thinkingText1 = currentLang === 'ar' ? 'جاري البحث وتحليل البيانات...' : 'Searching and analyzing data...';
+            const thinkingText2 = currentLang === 'ar' ? 'جاري صياغة وكتابة الرد الطبي دكتور...' : 'Composing the medical response, Doctor...';
+
             botMessageElement.innerHTML = `
                 <div class="thinking-wrapper" id="think-box">
                     <div class="small-spinner"></div>
-                    <span id="think-text">جاري البحث وتحليل البيانات...</span>
+                    <span id="think-text">${thinkingText1}</span>
                 </div>
             `;
             botRowElement.appendChild(botMessageElement);
             msgsContainer.appendChild(botRowElement);
             msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-            // الانتقال للخطوة الثانية من التفكير بعد ثانيتين
             const thinkingTimeout = setTimeout(() => {
                 const textEl = document.getElementById('think-text');
-                if(textEl) textEl.innerText = "جاري صياغة وكتابة الرد الطبي دكتور...";
+                if(textEl) textEl.innerText = thinkingText2;
             }, 2000);
 
-            // بناء هيكل الأجزاء (parts) للاستفسار الحالي ليدعم النص مع مصفوفة الصور
             let currentMessageParts = [{ text: question }];
             activeUploadedImages.forEach(img => {
                 currentMessageParts.push({
@@ -852,14 +987,11 @@
                 });
             });
 
-            // دفع الاستفسار الحالي إلى مصفوفة السياق المتتابع للنموذج
             chatContext.push({ role: "user", parts: currentMessageParts });
 
-            // تفريغ مصفوفة الصور المجهزة وتصفير شريط المعاينة فوراً استعداداً للمستقبل
             activeUploadedImages = [];
             renderImagePreviews();
 
-            // تفعيل زر الـ Pause وتعطيل الإرسال التقليدي
             setActionBtnToPauseState();
             chatAbortController = new AbortController();
 
@@ -874,369 +1006,36 @@
                 const data = await response.json();
                 clearTimeout(thinkingTimeout);
                 
-                // حفظ رد البوت في مصفوفة السياق لتعزيز ترابط وموثوقية الحوار مستقبلاً بالصور والنصوص
                 chatContext.push({ role: "model", parts: [{ text: data.answer }] });
                 
-                // عرض الرد النهائي حراً منسقاً بالماركداون داخل مساحة الشاشة بالكامل
                 botMessageElement.innerHTML = marked.parse(data.answer);
                 
             } catch (e) {
                 clearTimeout(thinkingTimeout);
                 if (e.name === 'AbortError') {
-                    // في حالة قيام الدكتور بضغط زر الـ Pause لإلغاء وتوقيف توليد النص
-                    botMessageElement.innerHTML = `<span style="color:var(--text-dimmed); font-style: italic;">🛑 تم إيقاف عملية إحضار وتوليد الإجابة بواسطة المستخدم.</span>`;
+                    const stopMsg = currentLang === 'ar'
+                        ? '🛑 تم إيقاف عملية إحضار وتوليد الإجابة بواسطة المستخدم.'
+                        : '🛑 Response generation stopped by the user.';
+                    botMessageElement.innerHTML = `<span style="color:var(--text-dimmed); font-style: italic;">${stopMsg}</span>`;
                 } else {
-                    chatContext.pop(); // التراجع للحفاظ على تماسك مصفوفة السياق في حالة حدوث أخطاء شبكة
-                    botMessageElement.innerHTML = `<span style="color:var(--error);">❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.</span>`;
+                    chatContext.pop();
+                    const errMsg = currentLang === 'ar'
+                        ? '❌ حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.'
+                        : '❌ Connection error. Please try again.';
+                    botMessageElement.innerHTML = `<span style="color:var(--error);">${errMsg}</span>`;
                 }
             } finally {
                 chatAbortController = null;
-                setActionBtnToSendState(); // إعادة إرجاع الزر لوضع الإرسال الطبيعي دائماً
+                setActionBtnToSendState();
                 msgsContainer.scrollTop = msgsContainer.scrollHeight;
             }
         }
 
 
-        // --- دوال التحكم في التنقل والتوجيه المضافة حديثاً للحاسبة ---
+        // --- دوال التحكم في التنقل والتوجيه للحاسبة ---
         function showCalcMenu() {
             document.getElementById('calc-menu').style.display = 'block';
             document.getElementById('step1').style.display = 'none';
             document.getElementById('step2').style.display = 'none';
             document.getElementById('motility-step').style.display = 'none';
-            document.getElementById('motility-complete-dialog').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-            state.route = null;
-        }
-
-        function selectCalcRoute(routeType) {
-            state.route = routeType;
-            document.getElementById('calc-menu').style.display = 'none';
-            
-            if (routeType === 'motility') {
-                state.motilityCurrentField = 1;
-                state.motilityHistory = [];
-                state.hasAggregating = false;
-                state.motilityDone = false;
-                state.motilityResults = null;
-                document.getElementById('motility-step').style.display = 'block';
-                setMotilityMode(state.motilityMode);
-                updateMotilityUI();
-            } else if (routeType === 'count_morph') {
-                document.getElementById('step1').style.display = 'block';
-            }
-        }
-
-        // --- دوال إدارة حسابات الـ Motility المضافة حديثاً ---
-        function setMotilityMode(mode) {
-            state.motilityMode = mode;
-            const absBtn = document.getElementById('toggle_abs_btn');
-            const pctBtn = document.getElementById('toggle_pct_btn');
-            const hintBox = document.getElementById('motility_hint_box');
-            const units = document.querySelectorAll('.mot-unit');
-            
-            if (mode === 'percent') {
-                pctBtn.style.background = 'var(--primary)';
-                pctBtn.style.color = '#fff';
-                absBtn.style.background = 'transparent';
-                absBtn.style.color = 'var(--text-dimmed)';
-                hintBox.style.display = 'block';
-                units.forEach(el => el.innerText = '%');
-            } else {
-                absBtn.style.background = 'var(--primary)';
-                absBtn.style.color = '#fff';
-                pctBtn.style.background = 'transparent';
-                pctBtn.style.color = 'var(--text-dimmed)';
-                hintBox.style.display = 'none';
-                units.forEach(el => el.innerText = 'sperm');
-            }
-        }
-
-        function updateMotilityUI() {
-            document.getElementById('motility_field_title').innerText = `الفيلد ${state.motilityCurrentField}`;
-            
-            // حساب المجموع التراكمي المحفوظ حتى الفيلد السابق للمراقبة التفاعلية
-            let cumulativeSperm = 0;
-            for (let i = 0; i < state.motilityCurrentField - 1; i++) {
-                if (state.motilityHistory[i]) cumulativeSperm += state.motilityHistory[i].totalSperm;
-            }
-            document.getElementById('motility_progress_txt').innerText = `المجموع الكلي الحالي: ${cumulativeSperm} حيوان منوي (فيلدات تم حفظها: ${state.motilityCurrentField - 1})`;
-            
-            // استرجاع الداتا المخزنة بالفيلد إن وجدت
-            const val = state.motilityHistory[state.motilityCurrentField - 1] || {totalSperm:"", gradeA:"", gradeB:"", gradeC:"", immotile:"", aggregating: false};
-            
-            document.getElementById('mot_total_sperm').value = val.totalSperm;
-            document.getElementById('mot_grade_a').value = val.gradeA;
-            document.getElementById('mot_grade_b').value = val.gradeB;
-            document.getElementById('mot_grade_c').value = val.gradeC;
-            document.getElementById('mot_immotile').value = val.immotile;
-            document.getElementById('mot_aggregating').checked = val.aggregating;
-            
-            document.getElementById('mot_back_btn').style.visibility = state.motilityCurrentField === 1 ? 'hidden' : 'visible';
-        }
-
-        function saveCurrentMotilityFieldData() {
-            state.motilityHistory[state.motilityCurrentField - 1] = {
-                totalSperm: parseInt(document.getElementById('mot_total_sperm').value) || 0,
-                gradeA: parseFloat(document.getElementById('mot_grade_a').value) || 0,
-                gradeB: parseFloat(document.getElementById('mot_grade_b').value) || 0,
-                gradeC: parseFloat(document.getElementById('mot_grade_c').value) || 0,
-                immotile: parseFloat(document.getElementById('mot_immotile').value) || 0,
-                aggregating: document.getElementById('mot_aggregating').checked
-            };
-            
-            if (document.getElementById('mot_aggregating').checked) {
-                state.hasAggregating = true;
-            }
-        }
-
-        function processMotilityField() {
-            const currentTotal = parseInt(document.getElementById('mot_total_sperm').value) || 0;
-            if (currentTotal <= 0) return alert("برجاء إدخال إجمالي عدد الحيوانات المنوية في هذا الفيلد أولاً.");
-            
-            saveCurrentMotilityFieldData();
-            
-            // حساب إجمالي العدد التراكمي الشامل للفيلد الحالي
-            let totalCumulativeSperm = state.motilityHistory.reduce((sum, item) => sum + item.totalSperm, 0);
-            let totalFieldsCounted = state.motilityHistory.length;
-            
-            // التحقق الطبية: استمرار الفحص حتى المجموع التراكمي >= 200 وبحد أدنى 5 فيلدات
-            if (totalCumulativeSperm >= 200 && totalFieldsCounted >= 5) {
-                state.motilityDone = true;
-                document.getElementById('motility-step').style.display = 'none';
-                document.getElementById('motility-complete-dialog').style.display = 'block';
-            } else {
-                state.motilityCurrentField++;
-                updateMotilityUI();
-            }
-        }
-
-        function prevMotilityField() {
-            if (state.motilityCurrentField > 1) {
-                saveCurrentMotilityFieldData();
-                state.motilityCurrentField--;
-                updateMotilityUI();
-            }
-        }
-
-        function computeMotilityFinalMetrics() {
-            let totalSpermAllFields = state.motilityHistory.reduce((sum, item) => sum + item.totalSperm, 0);
-            let numFields = state.motilityHistory.length;
-            
-            let avgA = 0, avgB = 0, avgC = 0, avgImmotile = 0;
-            
-            if (state.motilityMode === 'percent') {
-                // حساب متوسط النسب لكل نوع من الحركة عبر الحقول المجهرية
-                let sumA = state.motilityHistory.reduce((sum, item) => sum + item.gradeA, 0);
-                let sumB = state.motilityHistory.reduce((sum, item) => sum + item.gradeB, 0);
-                let sumC = state.motilityHistory.reduce((sum, item) => sum + item.gradeC, 0);
-                let sumImmotile = state.motilityHistory.reduce((sum, item) => sum + item.immotile, 0);
-                
-                avgA = sumA / numFields;
-                avgB = sumB / numFields;
-                avgC = sumC / numFields;
-                avgImmotile = sumImmotile / numFields;
-                
-                // معايرة رياضية للتأكد من المجموع = 100% في حال تفاوت مدخلات الكيميائي
-                let totalSum = avgA + avgB + avgC + avgImmotile;
-                if (totalSum > 0) {
-                    avgA = (avgA / totalSum) * 100;
-                    avgB = (avgB / totalSum) * 100;
-                    avgC = (avgC / totalSum) * 100;
-                    avgImmotile = (avgImmotile / totalSum) * 100;
-                }
-            } else {
-                // وضع الـ Absolute: قسمة مجموع كل نوع على المجموع الكلي للحقول والضرب في 100
-                let sumA = state.motilityHistory.reduce((sum, item) => sum + item.gradeA, 0);
-                let sumB = state.motilityHistory.reduce((sum, item) => sum + item.gradeB, 0);
-                let sumC = state.motilityHistory.reduce((sum, item) => sum + item.gradeC, 0);
-                let sumImmotile = state.motilityHistory.reduce((sum, item) => sum + item.immotile, 0);
-                
-                if (totalSpermAllFields > 0) {
-                    avgA = (sumA / totalSpermAllFields) * 100;
-                    avgB = (sumB / totalSpermAllFields) * 100;
-                    avgC = (sumC / totalSpermAllFields) * 100;
-                    avgImmotile = (sumImmotile / totalSpermAllFields) * 100;
-                }
-            }
-            
-            state.motilityResults = {
-                gradeA: avgA,
-                gradeB: avgB,
-                gradeC: avgC,
-                immotile: avgImmotile,
-                progressive: avgA + avgB,
-                totalMotile: avgA + avgB + avgC,
-                fieldsCounted: numFields,
-                totalSpermCounted: totalSpermAllFields
-            };
-        }
-
-        function calculateMotilityOnly() {
-            computeMotilityFinalMetrics();
-            document.getElementById('motility-complete-dialog').style.display = 'none';
-            showFinal();
-        }
-
-        function transitionToCountMorph() {
-            computeMotilityFinalMetrics();
-            document.getElementById('motility-complete-dialog').style.display = 'none';
-            document.getElementById('step1').style.display = 'block';
-        }
-
-
-        // --- جميع الدوال البرمجية الأصلية لحاسبة السيمن دون أي تعديل منطقي ---
-        function initCalc() {
-            state.sampleV = parseFloat(document.getElementById('sample_vol').value) || 0;
-            state.diluentV = parseFloat(document.getElementById('diluent_vol').value) || 0;
-            state.totalSemenV = parseFloat(document.getElementById('total_semen_vol').value) || 0;
-            if(state.sampleV <= 0 || state.totalSemenV <= 0) return alert("برجاء إدخال حجم العينة والحجم الكلي");
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'block';
-            updateUI();
-        }
-
-        function processSquare() {
-            saveCurrentState();
-            const data = state.history[state.current - 1];
-            if (!state.morphDone && data.abn > data.t) return alert(`خطأ: المشوهين (${data.abn}) أكبر من الإجمالي (${data.t})`);
-            
-            if (state.current <= 3 && data.t > 20 && !state.overloadIgnored) {
-                if (confirm("تنبيه تكدس (Overload)! هل تريد إعادة التخفيف؟")) return resetCalculatorOnly();
-                state.overloadIgnored = true;
-            }
-
-            if (state.current < 32) { state.current++; updateUI(); } 
-            else { showFinal(); }
-        }
-
-        function saveCurrentState() {
-            state.history[state.current - 1] = {
-                t: parseInt(document.getElementById('current_total').value) || 0,
-                abn: parseInt(document.getElementById('abn_total').value) || 0,
-                h: parseInt(document.getElementById('h_def').value) || 0,
-                n: parseInt(document.getElementById('n_def').value) || 0,
-                t_def: parseInt(document.getElementById('t_def').value) || 0
-            };
-        }
-
-        function prevSquare() {
-            if (state.current > 1) { state.current--; updateUI(); }
-        }
-
-        function updateUI() {
-            document.getElementById('square_title').innerText = `المربع ${state.current} / 32`;
-            const val = state.history[state.current - 1] || {t:"", abn:"", h:"", n:"", t_def:""};
-            document.getElementById('current_total').value = val.t;
-            document.getElementById('abn_total').value = val.abn;
-            document.getElementById('h_def').value = val.h;
-            document.getElementById('n_def').value = val.n;
-            document.getElementById('t_def').value = val.t_def;
-            document.getElementById('back_btn').style.visibility = state.current === 1 ? 'hidden' : 'visible';
-        }
-
-        // دالة عرض النتائج النهائية المطورة لدمج مخرجات الاختبارات بذكاء
-        function showFinal() {
-            if (document.getElementById('step2').style.display === 'block') {
-                saveCurrentState();
-            }
-
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('motility-complete-dialog').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
-            
-            // 1. معالجة ورسم قسم الحركة Motility إن وجد
-            if (state.motilityResults) {
-                document.getElementById('section_motility_results').style.display = 'block';
-                const mr = state.motilityResults;
-                
-                document.getElementById('res_mot_total').innerText = mr.totalMotile.toFixed(1) + "%" + (mr.totalMotile >= 40 ? " (طبيعي $\ge 40\%$)" : " (منخفض $< 40\%$)");
-                document.getElementById('res_mot_prog').innerText = mr.progressive.toFixed(1) + "%" + (mr.progressive >= 32 ? " (طبيعي $\ge 32\%$)" : " (منخفض $< 32\%$)");
-                document.getElementById('res_mot_a').innerText = mr.gradeA.toFixed(1) + "%";
-                document.getElementById('res_mot_b').innerText = mr.gradeB.toFixed(1) + "%";
-                document.getElementById('res_mot_c').innerText = mr.gradeC.toFixed(1) + "%";
-                document.getElementById('res_mot_immotile_val').innerText = mr.immotile.toFixed(1) + "%";
-                document.getElementById('res_mot_fields').innerText = mr.fieldsCounted;
-                document.getElementById('res_mot_total_counted').innerText = mr.totalSpermCounted;
-            } else {
-                document.getElementById('section_motility_results').style.display = 'none';
-            }
-
-            // 2. معالجة ورسم قسم العدد والتشوهات Count & Morphology إن وجد داتا
-            if (state.history.length > 0) {
-                document.getElementById('section_count_morph_results').style.display = 'block';
-                
-                const squaresCounted = state.history.length;
-                const totalInSquares = state.history.reduce((s, i) => s + i.t, 0);
-                
-                const factor = 32 / squaresCounted;
-                const df = (state.sampleV + state.diluentV) / state.sampleV;
-                const conc = (totalInSquares * factor) * (df * 5000);
-                const totalSpermCount = conc * state.totalSemenV;
-
-                const abnSum = state.history.reduce((s, i) => s + i.abn, 0);
-                const normalPct = totalInSquares > 0 ? ((totalInSquares - abnSum) / totalInSquares) * 100 : 0;
-                const abnPct = 100 - normalPct;
-
-                document.getElementById('res_conc').innerText = `Concentration: ${conc.toLocaleString()} /ml`;
-                document.getElementById('res_total_count').innerText = `Total Sperm Count: ${totalSpermCount.toLocaleString()} /ejaculate`;
-                document.getElementById('res_morph').innerText = normalPct.toFixed(1) + "%";
-                document.getElementById('res_abn_pct').innerText = abnPct.toFixed(1) + "%";
-                
-                if (totalInSquares > 0) {
-                    document.getElementById('res_h').innerText = ((state.history.reduce((s,i)=>s+i.h,0)/totalInSquares)*100).toFixed(1) + "%";
-                    document.getElementById('res_n').innerText = ((state.history.reduce((s,i)=>s+i.n,0)/totalInSquares)*100).toFixed(1) + "%";
-                    document.getElementById('res_t').innerText = ((state.history.reduce((s,i)=>s+i.t_def,0)/totalInSquares)*100).toFixed(1) + "%";
-                } else {
-                    document.getElementById('res_h').innerText = "0.0%";
-                    document.getElementById('res_n').innerText = "0.0%";
-                    document.getElementById('res_t').innerText = "0.0%";
-                }
-                document.getElementById('res_sq_count').innerText = squaresCounted;
-            } else {
-                document.getElementById('section_count_morph_results').style.display = 'none';
-            }
-
-            // 3. التحقق من وجود تعليق التكتل للـ Anti sperm ab
-            if (state.hasAggregating) {
-                document.getElementById('res_comment_box').style.display = 'block';
-            } else {
-                document.getElementById('res_comment_box').style.display = 'none';
-            }
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('printable-area');
-            const opt = { margin: 0.5, filename: 'Rekhmi_Semen_Analysis_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function resetCalculatorOnly() {
-            state = { 
-                current: 1, sampleV: 0, diluentV: 0, totalSemenV: 0, history: [], morphDone: false, overloadIgnored: false,
-                route: null, motilityCurrentField: 1, motilityHistory: [], motilityMode: 'percent', hasAggregating: false, motilityDone: false, motilityResults: null
-            };
-            
-            // تصفير مدخلات العد
-            document.getElementById('sample_vol').value = "";
-            document.getElementById('diluent_vol').value = "";
-            document.getElementById('total_semen_vol').value = "";
-            
-            // تصفير مدخلات الحركة
-            document.getElementById('mot_total_sperm').value = "";
-            document.getElementById('mot_grade_a').value = "";
-            document.getElementById('mot_grade_b').value = "";
-            document.getElementById('mot_grade_c').value = "";
-            document.getElementById('mot_immotile').value = "";
-            document.getElementById('mot_aggregating').checked = false;
-            
-            document.getElementById('results').style.display = 'none';
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('motility-step').style.display = 'none';
-            document.getElementById('motility-complete-dialog').style.display = 'none';
-            
-            showCalcMenu();
-        }
-    </script>
-</body>
-</html>
+            documen
